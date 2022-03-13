@@ -7,10 +7,17 @@ import {
   Param,
   Post,
   Put,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import { CustomerService } from './customer.service';
-import { CreateCustomerDto, GetCustomerIdDto, UpdateCustomerDto } from './dtos';
+import {
+  CreateCustomerDto,
+  GetCustomerIdDto,
+  UpdateCustomerDto,
+  CustomerOrderDto,
+  CustomerFiltersDto,
+} from './dtos';
 import {
   CreateCustomerResponse,
   DeleteCustomerResponse,
@@ -20,6 +27,7 @@ import {
 } from './responses';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
+import { PaginationDto } from '../common/dtos/pagination.dto';
 
 @Controller('v1/customers')
 export class CustomerController {
@@ -27,9 +35,17 @@ export class CustomerController {
 
   @Get()
   @UseGuards(JwtAuthGuard)
-  async getCustomerList() {
-    const customers = await this.customerService.findAll();
-    return new GetCustomerListResponse(customers);
+  async getCustomerList(
+    @Query() order: CustomerOrderDto,
+    @Query() pagination: PaginationDto,
+    @Query() search: CustomerFiltersDto,
+  ) {
+    const { count, items } = await this.customerService.findAndCount({
+      order,
+      pagination,
+      search,
+    });
+    return new GetCustomerListResponse(items, count, pagination, order);
   }
 
   @Get(':id')

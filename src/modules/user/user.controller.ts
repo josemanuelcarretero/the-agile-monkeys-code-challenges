@@ -7,10 +7,17 @@ import {
   Param,
   Post,
   Put,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import { UserService } from './user.service';
-import { CreateUserDto, GetUserIdDto, UpdateUserDto } from './dtos';
+import {
+  CreateUserDto,
+  GetUserIdDto,
+  UpdateUserDto,
+  UserOrderDto,
+  UserFiltersDto,
+} from './dtos';
 import {
   CreateUserResponse,
   DeleteUserResponse,
@@ -21,6 +28,7 @@ import {
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import UserTypeGuard from '../auth/guards/user-type.guard';
 import { UserType } from './enums/user-type.enum';
+import { PaginationDto } from '../common/dtos/pagination.dto';
 
 @Controller('v1/users')
 export class UserController {
@@ -28,9 +36,17 @@ export class UserController {
 
   @Get()
   @UseGuards(JwtAuthGuard)
-  async getUserList() {
-    const users = await this.userService.findAll();
-    return new GetUserListResponse(users);
+  async getUserList(
+    @Query() order: UserOrderDto,
+    @Query() pagination: PaginationDto,
+    @Query() search: UserFiltersDto,
+  ) {
+    const { count, items } = await this.userService.findAndCount({
+      order,
+      pagination,
+      search,
+    });
+    return new GetUserListResponse(items, count, pagination, order);
   }
 
   @Get(':id')
