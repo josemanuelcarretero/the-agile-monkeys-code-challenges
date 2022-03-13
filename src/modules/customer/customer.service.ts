@@ -1,4 +1,4 @@
-import { Injectable, Inject } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 
 import { Customer } from './models/customer.model';
 import { CreateCustomerDto, UpdateCustomerDto } from './dtos';

@@ -2,8 +2,8 @@ import {
   IsEmail,
   IsEnum,
   IsNotEmpty,
-  IsString,
   IsOptional,
+  IsString,
 } from 'class-validator';
 import { UserType } from '../enums/user-type.enum';
 

@@ -1,6 +1,5 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { BeforeApplicationShutdown, Inject, Injectable } from '@nestjs/common';
 import { Connection } from 'typeorm';
-import { BeforeApplicationShutdown } from '@nestjs/common';
 
 @Injectable()
 export class DatabaseService implements BeforeApplicationShutdown {

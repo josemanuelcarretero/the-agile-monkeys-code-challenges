@@ -47,6 +47,11 @@ dbport=5432
 dbusername=8288febf97e340c8891f5e44c929c73e
 dbpassword=8288febf97e340c8891f5e44c929c73e
 dbdatabase=the_agile_monkeys_code_challenges_db
+# For user session
+jwt_secret=9c2f7e6a3f5e4ac5b2e2c3ea8fc6e4a6e4da7b2b8a2a7e3b7c4e
+jwt_expires_in=60d
+# For offuscate the user email
+app_domain=crm.josemanuelcarretero.me
 ```
 
 ## Usage

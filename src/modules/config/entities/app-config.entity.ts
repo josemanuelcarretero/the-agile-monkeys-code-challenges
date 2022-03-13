@@ -10,6 +10,10 @@ export interface AppConfig {
   readonly password: {
     readonly salt_rounds: number;
   };
+  readonly jwt: {
+    readonly secret: string;
+    readonly expires_in: string;
+  };
   readonly app: {
     readonly domain: string;
   };

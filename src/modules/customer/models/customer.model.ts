@@ -1,5 +1,3 @@
-import { User } from '../../user/models/user.model';
-
 export interface Customer {
   id: string;
   name: string;
