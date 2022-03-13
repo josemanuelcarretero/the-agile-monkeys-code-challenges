@@ -1,0 +1,25 @@
+import { AppConfig } from './app-config.entity';
+import { config } from 'dotenv';
+
+function loadEnvironment(): AppConfig {
+  config({ debug: false });
+  return {
+    database: {
+      type: process.env.dbtype,
+      host: process.env.dbhost,
+      port: process.env.dbport,
+      username: process.env.dbusername,
+      password: process.env.dbpassword,
+      database: process.env.dbdatabase,
+    },
+  };
+}
+
+export const configProviders = [
+  {
+    provide: 'AppConfig',
+    useFactory: async () => {
+      return loadEnvironment();
+    },
+  },
+];
