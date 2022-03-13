@@ -12,6 +12,12 @@ function loadEnvironment(): AppConfig {
       password: process.env.dbpassword,
       database: process.env.dbdatabase,
     },
+    password: {
+      salt_rounds: parseInt(process.env.password_salt_rounds ?? '10'),
+    },
+    app: {
+      domain: process.env.app_domain,
+    },
   };
 }
 

@@ -7,4 +7,10 @@ export interface AppConfig {
     readonly password: string;
     readonly database: string;
   };
+  readonly password: {
+    readonly salt_rounds: number;
+  };
+  readonly app: {
+    readonly domain: string;
+  };
 }
