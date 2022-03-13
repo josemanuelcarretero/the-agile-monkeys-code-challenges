@@ -19,6 +19,7 @@ import {
   UpdateCustomerResponse,
 } from './responses';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { CurrentUser } from '../auth/decorators/current-user.decorator';
 
 @Controller('v1/customers')
 export class CustomerController {
@@ -40,28 +41,32 @@ export class CustomerController {
   @Post()
   @UseGuards(JwtAuthGuard)
   @HttpCode(201)
-  async createCustomer(@Body() createCustomerDto: CreateCustomerDto) {
+  async createCustomer(
+    @CurrentUser() user,
+    @Body() createCustomerDto: CreateCustomerDto,
+  ) {
     return new CreateCustomerResponse(
-      await this.customerService.create(createCustomerDto),
+      await this.customerService.create(createCustomerDto, user),
     );
   }
 
   @Put(':id')
   @UseGuards(JwtAuthGuard)
   async updateCustomer(
+    @CurrentUser() user,
     @Param() { id }: GetCustomerIdDto,
     @Body() updateCustomerDto: UpdateCustomerDto,
   ) {
     return new UpdateCustomerResponse(
-      await this.customerService.update(id, updateCustomerDto),
+      await this.customerService.update(id, updateCustomerDto, user),
     );
   }
 
   @Delete(':id')
   @UseGuards(JwtAuthGuard)
-  async deleteById(@Param() { id }: GetCustomerIdDto) {
+  async deleteById(@CurrentUser() user, @Param() { id }: GetCustomerIdDto) {
     return new DeleteCustomerResponse(
-      await this.customerService.deleteById(id),
+      await this.customerService.deleteById(id, user),
     );
   }
 }
