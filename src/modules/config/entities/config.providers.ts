@@ -15,6 +15,10 @@ function loadEnvironment(): AppConfig {
     password: {
       salt_rounds: parseInt(process.env.password_salt_rounds ?? '10'),
     },
+    jwt: {
+      secret: process.env.jwt_secret,
+      expires_in: process.env.jwt_expires_in,
+    },
     app: {
       domain: process.env.app_domain,
     },

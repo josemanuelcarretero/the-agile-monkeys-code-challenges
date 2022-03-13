@@ -1,10 +1,11 @@
-import { Injectable, Inject } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 
 import { Customer } from './models/customer.model';
 import { CreateCustomerDto, UpdateCustomerDto } from './dtos';
 import { CustomerNotFoundException } from './exceptions/customer-not-found.exception';
 import { CustomerAlreadyExistsException } from './exceptions/customer-already-exists.exception';
 import { Repository } from 'typeorm';
+import { User } from '../user/models/user.model';
 import { HelperService } from '../helpers/helpers.service';
 
 @Injectable()
@@ -24,6 +25,7 @@ export class CustomerService {
   async findById(id: string): Promise<Customer> {
     const customer = await this.customerRepository.findOne({
       where: { id, deleted: false },
+      relations: ['created_by', 'updated_by'],
     });
     if (!customer) {
       throw new CustomerNotFoundException();
@@ -31,13 +33,19 @@ export class CustomerService {
     return customer;
   }
 
-  async create(createCustomerDto: CreateCustomerDto): Promise<Customer> {
+  async create(
+    createCustomerDto: CreateCustomerDto,
+    createdBy: User,
+  ): Promise<Customer> {
     try {
       const insertResult = await this.customerRepository.insert({
         ...createCustomerDto,
+        created_by: createdBy,
+        updated_by: createdBy,
       });
       return await this.customerRepository.findOne({
         where: { id: insertResult.identifiers[0].id },
+        relations: ['created_by', 'updated_by'],
       });
     } catch (e) {
       throw new CustomerAlreadyExistsException();
@@ -47,9 +55,11 @@ export class CustomerService {
   async update(
     id: string,
     updateCustomerDto: UpdateCustomerDto,
+    updatedBy: User,
   ): Promise<Customer> {
     const customer = await this.customerRepository.findOne({
       where: { id, deleted: false },
+      relations: ['created_by', 'updated_by'],
     });
     if (!customer) {
       throw new CustomerNotFoundException();
@@ -68,10 +78,11 @@ export class CustomerService {
     return await this.customerRepository.save({
       ...customer,
       ...updateCustomerDto,
+      updated_by: updatedBy,
     });
   }
 
-  async deleteById(id: string): Promise<boolean> {
+  async deleteById(id: string, deletedBy: User): Promise<boolean> {
     const customer = await this.customerRepository.findOne({
       where: { id, deleted: false },
     });
@@ -87,6 +98,7 @@ export class CustomerService {
       ),
       deleted: true,
       deleted_at: new Date(),
+      deleted_by: deletedBy,
     });
     return savedCustomer?.deleted ?? false;
   }

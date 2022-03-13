@@ -1,4 +1,4 @@
-import { genSalt, hash } from 'bcrypt';
+import { compare, genSalt, hash } from 'bcrypt';
 import { Inject, Injectable } from '@nestjs/common';
 import { AppConfig } from '../config/entities/app-config.entity';
 import * as crypto from 'crypto-js';
@@ -10,6 +10,10 @@ export class HelperService {
   async encrypt(plainTextPassword: string) {
     const salt = await genSalt(this.config.password.salt_rounds);
     return hash(plainTextPassword, salt);
+  }
+
+  async matchPassword(hashedPassword: string, plainTextPassword: string) {
+    return compare(plainTextPassword, hashedPassword);
   }
 
   async obfuscateExternalId(externalId: string) {

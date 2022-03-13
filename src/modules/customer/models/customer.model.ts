@@ -8,6 +8,9 @@ export interface Customer {
   image: string;
   deleted: boolean;
   created_at: Date;
+  created_by: User;
   updated_at: Date;
+  updated_by: User;
   deleted_at?: Date;
+  deleted_by?: User;
 }
