@@ -1,9 +1,30 @@
 import { User } from '../models/user.model';
-import { UserDto } from '../dtos';
-import { SuccessResponse } from '../../common/responses/success.response';
+import { UserDto, UserOrderDto } from '../dtos';
+import { PaginationDto } from '../../common/dtos/pagination.dto';
+import { SuccessWithPaginationResponse } from '../../common/responses/success-with-pagination.response';
 
-export class GetUserListResponse extends SuccessResponse<UserDto[]> {
-  constructor(users: User[]) {
-    super('User list successfully retrieved', users.map(UserDto.create));
+export class GetUserListResponse extends SuccessWithPaginationResponse<
+  UserDto[]
+> {
+  constructor(
+    users: User[],
+    total: number,
+    paginationInfo: PaginationDto,
+    orderInfo: UserOrderDto,
+  ) {
+    super(
+      'User list successfully retrieved',
+      users.map(UserDto.create),
+      {
+        offset: paginationInfo.offset,
+        limit: paginationInfo.limit,
+        total: total,
+        length: users.length,
+      },
+      {
+        order: orderInfo.order,
+        dir: orderInfo.dir,
+      },
+    );
   }
 }

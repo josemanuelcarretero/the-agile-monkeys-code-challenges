@@ -1,12 +1,18 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Injectable, Inject } from '@nestjs/common';
 
 import { User } from './models/user.model';
-import { CreateUserDto, UpdateUserDto } from './dtos';
+import {
+  CreateUserDto,
+  UpdateUserDto,
+  UserFiltersDto,
+  UserOrderDto,
+} from './dtos';
 import { UserNotFoundException } from './exceptions/user-not-found.exception';
 import { UserAlreadyExistsException } from './exceptions/user-already-exists.exception';
 import { Repository } from 'typeorm';
 import { HelperService } from '../helpers/helpers.service';
 import { randomBytes } from 'crypto';
+import { PaginationDto } from '../common/dtos/pagination.dto';
 
 @Injectable()
 export class UserService {
@@ -16,8 +22,97 @@ export class UserService {
     private readonly helperService: HelperService,
   ) {}
 
-  async findAll(): Promise<User[]> {
-    return await this.userRepository.find({ deleted: false });
+  async findAndCount({
+    search,
+    order,
+    pagination,
+  }: {
+    search: UserFiltersDto;
+    order: UserOrderDto;
+    pagination: PaginationDto;
+  }) {
+    const query = this.userRepository.createQueryBuilder('user');
+    query.where('user.deleted = false');
+
+    if (search.query) {
+      query.andWhere(
+        'user.name LIKE :query' +
+          ' OR user.surname LIKE :query' +
+          ' OR user.email LIKE :query' +
+          ' OR user.created_by::text LIKE :query' +
+          ' OR user.updated_by::text LIKE :query',
+        { query: `%${search.query}%` },
+      );
+    }
+
+    if (search.filter_name) {
+      query.andWhere('user.name = :name', { name: search.filter_name });
+    }
+
+    if (search.filter_surname) {
+      query.andWhere('user.surname = :surname', {
+        surname: search.filter_surname,
+      });
+    }
+
+    if (search.filter_email) {
+      query.andWhere('user.email = :email', {
+        email: search.filter_email,
+      });
+    }
+
+    if (search.filter_type) {
+      query.andWhere('user.type = :type', {
+        type: search.filter_type,
+      });
+    }
+
+    if (search.filter_created_at) {
+      query.andWhere('user.created_at = :created_at', {
+        created_at: search.filter_created_at,
+      });
+    }
+
+    if (search.filter_updated_at) {
+      query.andWhere('user.updated_at = :updated_at', {
+        updated_at: search.filter_updated_at,
+      });
+    }
+
+    if (search.filter_created_at_from) {
+      query.andWhere('user.created_at >= :created_at_from', {
+        created_at_from: search.filter_created_at_from,
+      });
+    }
+
+    if (search.filter_created_at_to) {
+      query.andWhere('user.created_at <= :created_at_to', {
+        created_at_to: search.filter_created_at_to,
+      });
+    }
+
+    if (search.filter_updated_at_from) {
+      query.andWhere('user.updated_at >= :updated_at_from', {
+        updated_at_from: search.filter_updated_at_from,
+      });
+    }
+
+    if (search.filter_updated_at_to) {
+      query.andWhere('user.updated_at <= :updated_at_to', {
+        updated_at_to: search.filter_updated_at_to,
+      });
+    }
+
+    query.orderBy(`user.${order.order}`, order.dir);
+
+    if (pagination.offset) {
+      query.skip(pagination.offset);
+    }
+    if (pagination.limit) {
+      query.take(pagination.limit);
+    }
+    const [items, count] = await query.getManyAndCount();
+    return { items, count };
   }
 
   async findById(id: string): Promise<User> {

@@ -1,12 +1,18 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Injectable, Inject } from '@nestjs/common';
 
 import { Customer } from './models/customer.model';
-import { CreateCustomerDto, UpdateCustomerDto } from './dtos';
+import {
+  CreateCustomerDto,
+  UpdateCustomerDto,
+  CustomerFiltersDto,
+  CustomerOrderDto,
+} from './dtos';
 import { CustomerNotFoundException } from './exceptions/customer-not-found.exception';
 import { CustomerAlreadyExistsException } from './exceptions/customer-already-exists.exception';
 import { Repository } from 'typeorm';
 import { User } from '../user/models/user.model';
 import { HelperService } from '../helpers/helpers.service';
+import { PaginationDto } from '../common/dtos/pagination.dto';
 
 @Injectable()
 export class CustomerService {
@@ -16,10 +22,120 @@ export class CustomerService {
     private readonly helperService: HelperService,
   ) {}
 
-  async findAll() {
-    return await this.customerRepository.find({
-      where: { deleted: false },
-    });
+  async findAndCount({
+    search,
+    order,
+    pagination,
+  }: {
+    search: CustomerFiltersDto;
+    order: CustomerOrderDto;
+    pagination: PaginationDto;
+  }) {
+    const query = this.customerRepository
+      .createQueryBuilder('customer')
+      .innerJoinAndSelect('customer.created_by', 'created_by_user')
+      .innerJoinAndSelect('customer.updated_by', 'updated_by_user');
+    query.where('customer.deleted = false');
+
+    if (search.query) {
+      query.andWhere(
+        'customer.name LIKE :query' +
+          ' OR customer.surname LIKE :query' +
+          ' OR customer.external_id LIKE :query' +
+          ' OR customer.created_by::text LIKE :query' +
+          ' OR customer.updated_by::text LIKE :query' +
+          ' OR created_by_user.email LIKE :query' +
+          ' OR updated_by_user.email LIKE :query',
+        { query: `%${search.query}%` },
+      );
+    }
+
+    if (search.filter_name) {
+      query.andWhere('customer.name = :name', { name: search.filter_name });
+    }
+
+    if (search.filter_surname) {
+      query.andWhere('customer.surname = :surname', {
+        surname: search.filter_surname,
+      });
+    }
+
+    if (search.filter_external_id) {
+      query.andWhere('customer.external_id = :external_id', {
+        external_id: search.filter_external_id,
+      });
+    }
+
+    if (search.filter_created_at) {
+      query.andWhere('customer.created_at = :created_at', {
+        created_at: search.filter_created_at,
+      });
+    }
+
+    if (search.filter_updated_at) {
+      query.andWhere('customer.updated_at = :updated_at', {
+        updated_at: search.filter_updated_at,
+      });
+    }
+
+    if (search.filter_created_at_from) {
+      query.andWhere('customer.created_at >= :created_at_from', {
+        created_at_from: search.filter_created_at_from,
+      });
+    }
+
+    if (search.filter_created_at_to) {
+      query.andWhere('customer.created_at <= :created_at_to', {
+        created_at_to: search.filter_created_at_to,
+      });
+    }
+
+    if (search.filter_updated_at_from) {
+      query.andWhere('customer.updated_at >= :updated_at_from', {
+        updated_at_from: search.filter_updated_at_from,
+      });
+    }
+
+    if (search.filter_updated_at_to) {
+      query.andWhere('customer.updated_at <= :updated_at_to', {
+        updated_at_to: search.filter_updated_at_to,
+      });
+    }
+
+    if (search.filter_created_by) {
+      query.andWhere('customer.created_by = :created_by', {
+        created_by: search.filter_created_by,
+      });
+    }
+
+    if (search.filter_updated_by) {
+      query.andWhere('customer.updated_by = :updated_by', {
+        updated_by: search.filter_updated_by,
+      });
+    }
+
+    if (search.filter_created_by_email) {
+      query.andWhere('created_by_user.email = :created_by_email', {
+        created_by_email: search.filter_created_by_email,
+      });
+    }
+
+    if (search.filter_updated_by_email) {
+      query.andWhere('updated_by_user.email = :updated_by_email', {
+        updated_by_email: search.filter_updated_by_email,
+      });
+    }
+
+    query.orderBy(`customer.${order.order}`, order.dir);
+
+    if (pagination.offset) {
+      query.skip(pagination.offset);
+    }
+    if (pagination.limit) {
+      query.take(pagination.limit);
+    }
+    const [items, count] = await query.getManyAndCount();
+    return { items, count };
   }
 
   async findById(id: string): Promise<Customer> {
