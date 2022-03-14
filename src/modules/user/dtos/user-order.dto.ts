@@ -1,5 +1,6 @@
 import { IsEnum } from 'class-validator';
 import { OrderDto } from '../../common/dtos/order.dto';
+import { ApiProperty } from '@nestjs/swagger';
 
 enum OrderField {
   id = 'id',
@@ -11,6 +12,12 @@ enum OrderField {
 }
 
 export class UserOrderDto extends OrderDto {
+  @ApiProperty({
+    description: 'Field to order the results',
+    required: false,
+    enum: OrderField,
+    default: OrderField.created_at,
+  })
   @IsEnum(Object.values(OrderField), { message: 'Invalid order field' })
   readonly order: string = OrderField.created_at;
 }

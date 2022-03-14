@@ -5,7 +5,9 @@ import { LoginResponse } from './responses';
 import { UserService } from '../user/user.service';
 import { HelperService } from '../helpers/helpers.service';
 import { PasswordDoesNotMatchException } from './exceptions/password-does-not-match.exception';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Auth')
 @Controller('v1/auth')
 export class AuthController {
   constructor(
@@ -15,6 +17,12 @@ export class AuthController {
   ) {}
 
   @Post('in')
+  @ApiOperation({
+    summary: 'Start session with email and password to get access token',
+  })
+  @ApiResponse({
+    type: LoginResponse,
+  })
   async login(@Body() loginDTO: LoginDto): Promise<LoginResponse> {
     const { email, password } = loginDTO;
     const user = await this.userService.findByEmail(email);

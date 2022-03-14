@@ -5,7 +5,7 @@ import { SuccessWithPaginationResponse } from '../../common/responses/success-wi
 
 export class GetUserListResponse extends SuccessWithPaginationResponse<
   UserDto[]
-> {
+>(UserDto, 'User list successfully retrieved', UserOrderDto) {
   constructor(
     users: User[],
     total: number,
@@ -13,7 +13,6 @@ export class GetUserListResponse extends SuccessWithPaginationResponse<
     orderInfo: UserOrderDto,
   ) {
     super(
-      'User list successfully retrieved',
       users.map(UserDto.create),
       {
         offset: paginationInfo.offset,

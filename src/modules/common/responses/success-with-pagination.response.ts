@@ -1,19 +1,35 @@
 import { SuccessResponse } from './success.response';
-import { OuputPaginationDto } from '../dtos/ouput-pagination.dto';
+import { OutputPaginationDto } from '../dtos/output-pagination.dto';
 import { OrderDto } from '../dtos/order.dto';
+import { ApiProperty } from '@nestjs/swagger';
 
-export class SuccessWithPaginationResponse<T> extends SuccessResponse<T> {
-  pagination: OuputPaginationDto;
-  order: OrderDto;
-
-  constructor(
-    message: string,
-    data: T,
-    pagination: OuputPaginationDto,
-    order: OrderDto,
+export function SuccessWithPaginationResponse<T>(
+  dataSpecification: any,
+  msg: string,
+  orderSpecification?: typeof OrderDto,
+): any {
+  class SuccessWithPaginationResponseTemplate extends SuccessResponse<T>(
+    dataSpecification,
+    msg,
+    true,
   ) {
-    super(message, data);
-    this.pagination = pagination;
-    this.order = order;
+    @ApiProperty({
+      description: 'Pagination used in the response',
+      type: OutputPaginationDto,
+    })
+    pagination: OutputPaginationDto;
+    @ApiProperty({
+      description: 'Order used in the response',
+      type: orderSpecification || OrderDto,
+    })
+    order: OrderDto;
+
+    constructor(data: T, pagination: OutputPaginationDto, order: OrderDto) {
+      super(data);
+      this.pagination = pagination;
+      this.order = order;
+    }
   }
+
+  return SuccessWithPaginationResponseTemplate;
 }

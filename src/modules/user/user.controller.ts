@@ -15,8 +15,8 @@ import {
   CreateUserDto,
   GetUserIdDto,
   UpdateUserDto,
-  UserOrderDto,
   UserFiltersDto,
+  UserOrderDto,
 } from './dtos';
 import {
   CreateUserResponse,
@@ -29,13 +29,27 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import UserTypeGuard from '../auth/guards/user-type.guard';
 import { UserType } from './enums/user-type.enum';
 import { PaginationDto } from '../common/dtos/pagination.dto';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 
+@ApiTags('Users')
 @Controller('v1/users')
 export class UserController {
   constructor(private userService: UserService) {}
 
   @Get()
   @UseGuards(JwtAuthGuard)
+  @ApiOperation({
+    summary: 'Get all users with pagination and filters',
+  })
+  @ApiBearerAuth('JWT-auth')
+  @ApiResponse({
+    type: GetUserListResponse,
+  })
   async getUserList(
     @Query() order: UserOrderDto,
     @Query() pagination: PaginationDto,
@@ -51,6 +65,13 @@ export class UserController {
 
   @Get(':id')
   @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth('JWT-auth')
+  @ApiOperation({
+    summary: 'Get user by id',
+  })
+  @ApiResponse({
+    type: GetUserByIdResponse,
+  })
   async getUserById(@Param() { id }: GetUserIdDto) {
     return new GetUserByIdResponse(await this.userService.findById(id));
   }
@@ -58,7 +79,14 @@ export class UserController {
   @Post()
   @UseGuards(UserTypeGuard(UserType.ADMIN))
   @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth('JWT-auth')
+  @ApiOperation({
+    summary: 'Create new user',
+  })
   @HttpCode(201)
+  @ApiResponse({
+    type: CreateUserResponse,
+  })
   async createUser(@Body() createUserDto: CreateUserDto) {
     return new CreateUserResponse(await this.userService.create(createUserDto));
   }
@@ -66,6 +94,13 @@ export class UserController {
   @Put(':id')
   @UseGuards(UserTypeGuard(UserType.ADMIN))
   @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth('JWT-auth')
+  @ApiOperation({
+    summary: 'Update user by id',
+  })
+  @ApiResponse({
+    type: UpdateUserResponse,
+  })
   async updateUser(
     @Param() { id }: GetUserIdDto,
     @Body() updateUserDto: UpdateUserDto,
@@ -78,6 +113,13 @@ export class UserController {
   @Delete(':id')
   @UseGuards(UserTypeGuard(UserType.ADMIN))
   @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth('JWT-auth')
+  @ApiOperation({
+    summary: 'Delete user by id',
+  })
+  @ApiResponse({
+    type: DeleteUserResponse,
+  })
   async deleteById(@Param() { id }: GetUserIdDto) {
     return new DeleteUserResponse(await this.userService.deleteById(id));
   }

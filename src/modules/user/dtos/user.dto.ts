@@ -1,18 +1,50 @@
 import { UserType } from '../enums/user-type.enum';
+import { ApiProperty } from '@nestjs/swagger';
+import * as faker from 'faker';
+import { v4 as uuid } from 'uuid';
 
 export class UserDto {
+  @ApiProperty({
+    description: 'User id',
+    example: uuid(),
+  })
   readonly id?: string;
 
+  @ApiProperty({
+    description: 'User name',
+    example: faker.name.firstName(),
+  })
   readonly name: string;
 
+  @ApiProperty({
+    description: 'User surname',
+    example: faker.name.lastName(),
+  })
   readonly surname: string;
 
+  @ApiProperty({
+    description: 'User email',
+    example: faker.internet.email(),
+  })
   readonly email: string;
 
+  @ApiProperty({
+    description: 'User type',
+    enum: UserType,
+    example: UserType.ADMIN,
+  })
   readonly type: UserType;
 
+  @ApiProperty({
+    description: 'User created date',
+    example: faker.date.past(),
+  })
   readonly created_at?: Date;
 
+  @ApiProperty({
+    description: 'User updated date',
+    example: faker.date.past(),
+  })
   readonly updated_at?: Date;
 
   constructor(

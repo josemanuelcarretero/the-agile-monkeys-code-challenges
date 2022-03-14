@@ -5,16 +5,14 @@ import { SuccessWithPaginationResponse } from '../../common/responses/success-wi
 
 export class GetCustomerListResponse extends SuccessWithPaginationResponse<
   CustomerDto[]
-> {
+>(CustomerDto, 'Customer list successfully retrieved', CustomerOrderDto) {
   constructor(
     customers: Customer[],
     total: number,
     paginationInfo: PaginationDto,
     orderInfo: CustomerOrderDto,
   ) {
-    console.log(customers);
     super(
-      'Customer list successfully retrieved',
       customers.map(CustomerDto.create),
       {
         offset: paginationInfo.offset,
