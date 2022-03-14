@@ -19,8 +19,8 @@ module.exports = [
     migrationsRun: true,
     logging: true,
     cli: {
-      migrationsDir: './src/modules/database/migrations',
-      subscribersDir: './src/modules/database/subscribers',
+      migrationsDir: './dist/modules/database/migrations',
+      subscribersDir: './dist/modules/database/subscribers',
     },
   },
 ];
