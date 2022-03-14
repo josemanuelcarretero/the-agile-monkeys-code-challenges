@@ -1,11 +1,11 @@
-import { Injectable, Inject } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 
 import { Customer } from './models/customer.model';
 import {
   CreateCustomerDto,
-  UpdateCustomerDto,
   CustomerFiltersDto,
   CustomerOrderDto,
+  UpdateCustomerDto,
 } from './dtos';
 import { CustomerNotFoundException } from './exceptions/customer-not-found.exception';
 import { CustomerAlreadyExistsException } from './exceptions/customer-already-exists.exception';
@@ -33,8 +33,8 @@ export class CustomerService {
   }) {
     const query = this.customerRepository
       .createQueryBuilder('customer')
-      .innerJoinAndSelect('customer.created_by', 'created_by_user')
-      .innerJoinAndSelect('customer.updated_by', 'updated_by_user');
+      .innerJoin('customer.created_by', 'created_by_user')
+      .innerJoin('customer.updated_by', 'updated_by_user');
     query.where('customer.deleted = false');
 
     if (search.query) {

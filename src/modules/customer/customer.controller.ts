@@ -13,10 +13,10 @@ import {
 import { CustomerService } from './customer.service';
 import {
   CreateCustomerDto,
+  CustomerFiltersDto,
+  CustomerOrderDto,
   GetCustomerIdDto,
   UpdateCustomerDto,
-  CustomerOrderDto,
-  CustomerFiltersDto,
 } from './dtos';
 import {
   CreateCustomerResponse,
@@ -28,13 +28,27 @@ import {
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { PaginationDto } from '../common/dtos/pagination.dto';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 
+@ApiTags('Customers')
 @Controller('v1/customers')
 export class CustomerController {
   constructor(private customerService: CustomerService) {}
 
   @Get()
+  @ApiOperation({
+    summary: 'Get all customer with pagination and filters',
+  })
+  @ApiBearerAuth('JWT-auth')
   @UseGuards(JwtAuthGuard)
+  @ApiResponse({
+    type: GetCustomerListResponse,
+  })
   async getCustomerList(
     @Query() order: CustomerOrderDto,
     @Query() pagination: PaginationDto,
@@ -49,14 +63,28 @@ export class CustomerController {
   }
 
   @Get(':id')
+  @ApiOperation({
+    summary: 'Get customer by id',
+  })
   @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth('JWT-auth')
+  @ApiResponse({
+    type: GetCustomerByIdResponse,
+  })
   async getCustomerById(@Param() { id }: GetCustomerIdDto) {
     return new GetCustomerByIdResponse(await this.customerService.findById(id));
   }
 
   @Post()
+  @ApiOperation({
+    summary: 'Create new customer',
+  })
   @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth('JWT-auth')
   @HttpCode(201)
+  @ApiResponse({
+    type: CreateCustomerResponse,
+  })
   async createCustomer(
     @CurrentUser() user,
     @Body() createCustomerDto: CreateCustomerDto,
@@ -67,7 +95,14 @@ export class CustomerController {
   }
 
   @Put(':id')
+  @ApiOperation({
+    summary: 'Update customer by id',
+  })
   @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth('JWT-auth')
+  @ApiResponse({
+    type: UpdateCustomerResponse,
+  })
   async updateCustomer(
     @CurrentUser() user,
     @Param() { id }: GetCustomerIdDto,
@@ -79,7 +114,14 @@ export class CustomerController {
   }
 
   @Delete(':id')
+  @ApiOperation({
+    summary: 'Delete customer by id',
+  })
   @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth('JWT-auth')
+  @ApiResponse({
+    type: DeleteCustomerResponse,
+  })
   async deleteById(@CurrentUser() user, @Param() { id }: GetCustomerIdDto) {
     return new DeleteCustomerResponse(
       await this.customerService.deleteById(id, user),

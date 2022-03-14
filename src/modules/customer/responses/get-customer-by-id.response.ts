@@ -1,9 +1,12 @@
+import { Customer } from '../models/customer.model';
 import { CustomerDto } from '../dtos';
 import { SuccessResponse } from '../../common/responses/success.response';
-import { Customer } from '../models/customer.model';
 
-export class GetCustomerByIdResponse extends SuccessResponse<CustomerDto> {
+export class GetCustomerByIdResponse extends SuccessResponse<CustomerDto>(
+  CustomerDto,
+  'Customer successfully retrieved',
+) {
   constructor(customer: Customer) {
-    super('Customer successfully retrieved', CustomerDto.create(customer));
+    super(CustomerDto.create(customer));
   }
 }

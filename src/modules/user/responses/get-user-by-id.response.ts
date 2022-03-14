@@ -2,8 +2,11 @@ import { User } from '../models/user.model';
 import { UserDto } from '../dtos';
 import { SuccessResponse } from '../../common/responses/success.response';
 
-export class GetUserByIdResponse extends SuccessResponse<UserDto> {
+export class GetUserByIdResponse extends SuccessResponse<UserDto>(
+  UserDto,
+  'User successfully retrieved',
+) {
   constructor(user: User) {
-    super('User successfully retrieved', UserDto.create(user));
+    super(UserDto.create(user));
   }
 }

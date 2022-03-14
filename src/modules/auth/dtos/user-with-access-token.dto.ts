@@ -1,7 +1,13 @@
 import { UserType } from '../../user/enums/user-type.enum';
+import { ApiProperty } from '@nestjs/swagger';
+import { v4 as uuid } from 'uuid';
 import { UserDto } from '../../user/dtos';
 
 export class UserWithAccessTokenDto extends UserDto {
+  @ApiProperty({
+    description: 'User access token',
+    example: uuid(),
+  })
   readonly access_token: string;
 
   constructor(
