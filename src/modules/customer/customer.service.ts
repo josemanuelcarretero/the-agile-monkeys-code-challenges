@@ -33,8 +33,8 @@ export class CustomerService {
   }) {
     const query = this.customerRepository
       .createQueryBuilder('customer')
-      .innerJoin('customer.created_by', 'created_by_user')
-      .innerJoin('customer.updated_by', 'updated_by_user');
+      .innerJoinAndSelect('customer.created_by', 'created_by_user')
+      .innerJoinAndSelect('customer.updated_by', 'updated_by_user');
     query.where('customer.deleted = false');
 
     if (search.query) {
