@@ -1,0 +1,23 @@
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      nodejs: 12
+    commands:
+      - echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
+  pre_build:
+    commands:
+      - npm install
+      - npm run build
+  build:
+    commands:
+      - docker build -t jmcarretero/the-agile-monkeys-code-challenges .
+  post_build:
+    commands:
+      - docker push jmcarretero/the-agile-monkeys-code-challenges
+
+artifacts:
+  files:
+    - '**/*'
+  name: $AWS_REGION-$(date +%Y-%m-%d)
