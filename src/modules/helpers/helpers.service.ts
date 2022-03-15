@@ -2,6 +2,7 @@ import { compare, genSalt, hash } from 'bcrypt';
 import { Inject, Injectable } from '@nestjs/common';
 import { AppConfig } from '../config/entities/app-config.entity';
 import * as crypto from 'crypto-js';
+import { extname } from 'path';
 
 @Injectable()
 export class HelperService {

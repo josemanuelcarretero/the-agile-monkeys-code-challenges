@@ -16,5 +16,13 @@ export interface AppConfig {
   };
   readonly app: {
     readonly domain: string;
+    readonly prefix_images: string;
+    readonly base_url: string;
+  };
+  readonly aws: {
+    readonly access_key_id: string;
+    readonly secret_access_key: string;
+    readonly region: string;
+    readonly bucket: string;
   };
 }
