@@ -4,6 +4,9 @@
   "description": "Code challenge for The Agile Monkeys. The test consists of setting up a backend of small crm that serves a REST API",
   "author": "Jose Manuel Carretero <josemanuelcarreterocuenca@gmail.com>",
   "license": "MIT",
+  "config": {
+    "node-options": "--optimize_for_size --max_old_space_size=2560 --gc_interval=100"
+  },
   "scripts": {
     "prebuild": "rimraf dist",
     "build": "nest build",
