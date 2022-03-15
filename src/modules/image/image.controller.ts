@@ -95,6 +95,6 @@ export class ImageController {
     summary: 'Get image by filename',
   })
   downloadFile(@Param() { filename }: GetFileByFilenameDto, @Res() res) {
-    return res.sendFile(filename, { root: 'images' });
+    return res.sendFile(filename);
   }
 }

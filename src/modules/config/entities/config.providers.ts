@@ -22,7 +22,7 @@ function loadEnvironment(): AppConfig {
     app: {
       domain: process.env.app_domain,
       base_url: process.env.app_base_url,
-      prefix_images: process.env.app_prefix_images ?? '/v1/images',
+      prefix_images: process.env.app_prefix_images ?? '/v1/images/',
     },
     aws: {
       access_key_id: process.env.aws_access_key_id,
