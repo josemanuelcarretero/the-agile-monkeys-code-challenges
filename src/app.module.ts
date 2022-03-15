@@ -6,6 +6,7 @@ import { HelperModule } from './modules/helpers/helpers.module';
 import { CustomerModule } from './modules/customer/customer.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { ImageModule } from './modules/image/image.module';
+import { InitModule } from './modules/init/init.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { ImageModule } from './modules/image/image.module';
     UserModule,
     CustomerModule,
     ImageModule,
+    InitModule,
   ],
   controllers: [],
   providers: [],

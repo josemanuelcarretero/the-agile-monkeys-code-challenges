@@ -34,6 +34,12 @@ async function bootstrap() {
 
   await app.register(contentParser);
   app.useStaticAssets({ root: join(__dirname, '../images/') });
+  app.setViewEngine({
+    engine: {
+      handlebars: require('handlebars'),
+    },
+    templates: join(__dirname, '..', 'views'),
+  });
 
   const config = new DocumentBuilder()
     .setTitle('API Test - The CRM Service')
