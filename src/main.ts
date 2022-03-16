@@ -14,7 +14,7 @@ import { join } from 'path';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestFastifyApplication>(
-    AppModule,
+    AppModule.registerAsync(false),
     new FastifyAdapter(),
   );
 
