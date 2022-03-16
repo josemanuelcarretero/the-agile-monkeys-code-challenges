@@ -12,6 +12,7 @@ import { v4 as uuid } from 'uuid';
 import { Customer } from '../src/modules/customer/models/customer.model';
 import { UtilsModule } from './modules/utils/utils.module';
 import { UtilService } from './modules/utils/utils.service';
+import { before } from '@nestjs/swagger/dist/plugin';
 
 describe('CustomerController (e2c)', () => {
   let app: NestFastifyApplication;
@@ -39,12 +40,14 @@ describe('CustomerController (e2c)', () => {
 
     customerRepository = app.get('CustomerRepository');
     utilService = app.get(UtilService);
-
-    await utilService.clearDatabase();
   });
 
   afterAll(async () => {
     await app.close();
+  });
+
+  beforeEach(async () => {
+    await utilService.clearDatabase();
   });
 
   it('/v1/customers Customer successfully created (POST)', async () => {
@@ -210,7 +213,6 @@ describe('CustomerController (e2c)', () => {
   });
 
   it('/v1/customers Customer list successfully retrieved (GET)', async () => {
-    await utilService.clearDatabase();
     const userSigned = await utilService.getUserSigned();
     const customer = [
       await utilService.insertRandomCustomer(userSigned),
@@ -312,7 +314,6 @@ describe('CustomerController (e2c)', () => {
       })
       .expect(409)
       .then((response) => {
-        console.log(response.body);
         const { body } = response;
         expect(body).toEqual({
           success: false,

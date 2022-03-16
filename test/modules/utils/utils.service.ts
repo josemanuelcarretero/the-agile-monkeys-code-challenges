@@ -112,10 +112,8 @@ export class UtilService {
     };
   }
 
-  clearDatabase() {
-    return Promise.all([
-      this.customerRepository.delete({}),
-      this.userRepository.delete({}),
-    ]);
+  async clearDatabase() {
+    await this.customerRepository.delete({});
+    await this.userRepository.delete({});
   }
 }
