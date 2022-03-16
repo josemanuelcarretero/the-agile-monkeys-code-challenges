@@ -24,7 +24,7 @@ export class CreateUserDto {
     description: 'User email',
     example: faker.internet.email(),
   })
-  @IsEmail({ message: 'Email must be a email' })
+  @IsEmail({}, { message: 'Email must be a valid email' })
   @IsNotEmpty({ message: 'Email should not be empty' })
   readonly email: string;
 

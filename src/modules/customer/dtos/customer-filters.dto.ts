@@ -48,7 +48,7 @@ export class CustomerFiltersDto {
     required: false,
   })
   @IsOptional()
-  @IsEmail({ message: 'Created by[email] must be a valid email' })
+  @IsEmail({}, { message: 'Created by[email] must be a valid email' })
   readonly filter_created_by_email?: string;
 
   @ApiProperty({
@@ -56,7 +56,7 @@ export class CustomerFiltersDto {
     required: false,
   })
   @IsOptional()
-  @IsEmail({ message: 'Updated by[email] must be a valid email' })
+  @IsEmail({}, { message: 'Updated by[email] must be a valid email' })
   readonly filter_updated_by_email?: string;
 
   @ApiProperty({

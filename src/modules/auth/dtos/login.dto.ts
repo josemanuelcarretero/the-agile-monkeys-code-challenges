@@ -6,7 +6,7 @@ export class LoginDto {
     description: 'User email',
     example: 'admin@crm.josemanuelcarretero.me',
   })
-  @IsEmail({ message: 'Email must be a email' })
+  @IsEmail({}, { message: 'Email must be a valid email' })
   @IsNotEmpty({ message: 'Email should not be empty' })
   readonly email: string;
 
