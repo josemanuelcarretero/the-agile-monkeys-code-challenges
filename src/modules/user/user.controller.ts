@@ -42,6 +42,7 @@ export class UserController {
   constructor(private userService: UserService) {}
 
   @Get()
+  @UseGuards(UserTypeGuard(UserType.ADMIN))
   @UseGuards(JwtAuthGuard)
   @ApiOperation({
     summary: 'Get all users with pagination and filters',
@@ -64,6 +65,7 @@ export class UserController {
   }
 
   @Get(':id')
+  @UseGuards(UserTypeGuard(UserType.ADMIN))
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth('JWT-auth')
   @ApiOperation({
