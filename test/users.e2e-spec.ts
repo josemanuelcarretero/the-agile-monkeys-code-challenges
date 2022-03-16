@@ -40,12 +40,14 @@ describe('UserController (e2e)', () => {
 
     userRepository = app.get('UserRepository');
     utilService = app.get(UtilService);
-
-    await utilService.clearDatabase();
   });
 
   afterAll(async () => {
     await app.close();
+  });
+
+  beforeEach(async () => {
+    await utilService.clearDatabase();
   });
 
   it('/v1/users User successfully created (POST)', async () => {
@@ -90,7 +92,6 @@ describe('UserController (e2e)', () => {
       .send(userToUpdatedWithNewData)
       .then((response) => {
         const { body } = response;
-        console.log(body);
         expect(response.status).toBe(200);
         expect(body).toEqual({
           success: true,
@@ -158,7 +159,6 @@ describe('UserController (e2e)', () => {
   });
 
   it('/v1/users User list successfully retrieved (GET)', async () => {
-    await utilService.clearDatabase();
     const userSigned = await utilService.getUserSigned();
     const usersSavedReadyToRetrieved = [
       await utilService.insertRandomUser(),

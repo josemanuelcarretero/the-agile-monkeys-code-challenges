@@ -10,6 +10,7 @@ import { GlobalExceptionFilter } from '../src/modules/common/filters/global-exce
 import * as faker from 'faker';
 import { UtilsModule } from './modules/utils/utils.module';
 import { UtilService } from './modules/utils/utils.service';
+import { before } from '@nestjs/swagger/dist/plugin';
 
 describe('AuthController (e2e)', () => {
   let app: NestFastifyApplication;
@@ -35,12 +36,14 @@ describe('AuthController (e2e)', () => {
     await app.getHttpAdapter().getInstance().ready();
 
     utilService = app.get(UtilService);
-
-    await utilService.clearDatabase();
   });
 
   afterAll(async () => {
     await app.close();
+  });
+
+  beforeEach(async () => {
+    await utilService.clearDatabase();
   });
 
   it('/auth/in Login successfully (POST)', async () => {
