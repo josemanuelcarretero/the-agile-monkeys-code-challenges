@@ -25,4 +25,12 @@ export interface AppConfig {
     readonly region: string;
     readonly bucket: string;
   };
+  readonly test_database: {
+    readonly type: string;
+    readonly host: string;
+    readonly port: string;
+    readonly username: string;
+    readonly password: string;
+    readonly database: string;
+  };
 }

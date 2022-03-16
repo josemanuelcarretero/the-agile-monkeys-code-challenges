@@ -30,6 +30,14 @@ function loadEnvironment(): AppConfig {
       region: process.env.aws_region,
       bucket: process.env.aws_bucket,
     },
+    test_database: {
+      type: process.env.testing_dbtype,
+      host: process.env.testing_dbhost,
+      port: process.env.testing_dbport,
+      username: process.env.testing_dbusername,
+      password: process.env.testing_dbpassword,
+      database: process.env.testing_dbdatabase,
+    },
   };
 }
 
