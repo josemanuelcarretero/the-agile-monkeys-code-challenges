@@ -1,6 +1,6 @@
-import { BadRequestException } from '@nestjs/common';
+import { NotFoundException } from '@nestjs/common';
 
-export class UserNotFoundException extends BadRequestException {
+export class UserNotFoundException extends NotFoundException {
   constructor() {
     super(`User not found`);
   }
