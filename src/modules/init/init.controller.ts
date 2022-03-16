@@ -1,8 +1,10 @@
 import { Controller, Get, Render } from '@nestjs/common';
+import { ApiExcludeEndpoint } from '@nestjs/swagger';
 
 @Controller('/')
 export class InitController {
   @Get()
+  @ApiExcludeEndpoint()
   @Render('index.hbs')
   root() {
     return {
@@ -15,10 +17,6 @@ export class InitController {
         {
           name: 'Documentation in production',
           link: 'https://crm.josemanuelcarretero.me/api',
-        },
-        {
-          name: 'Documentation in notion',
-          link: 'https://www.notion.so/API-Test-The-CRM-Service-859ed65978194d418df1e182b986c47b',
         },
         {
           name: 'Source repository',
