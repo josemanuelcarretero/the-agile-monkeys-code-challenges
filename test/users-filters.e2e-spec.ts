@@ -165,7 +165,6 @@ describe('UserController:filters (e2e)', () => {
       )
       .set('Authorization', `Bearer ${access_token}`)
       .then((response) => {
-        console.log(response.body);
         const { body } = response;
         expect(body).toEqual(
           utilService.mapUsersWithPagination([usersSavedReadyToRetrieved[0]]),

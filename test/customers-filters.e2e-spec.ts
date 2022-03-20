@@ -177,7 +177,6 @@ describe('CustomerController:filters (e2e)', () => {
       )
       .set('Authorization', `Bearer ${access_token}`)
       .then((response) => {
-        console.log(response.body);
         const { body } = response;
         expect(body).toEqual(
           utilService.mapCustomersWithPagination([
@@ -444,7 +443,6 @@ describe('CustomerController:filters (e2e)', () => {
       .get(`/v1/customers?filter_updated_at=123`)
       .set('Authorization', `Bearer ${access_token}`)
       .then((response) => {
-        console.log(response);
         const { body } = response;
         expect(body).toEqual({
           status: 400,
