@@ -11,7 +11,7 @@ import { CustomerNotFoundException } from './exceptions/customer-not-found.excep
 import { CustomerAlreadyExistsException } from './exceptions/customer-already-exists.exception';
 import { Repository } from 'typeorm';
 import { User } from '../user/models/user.model';
-import { HelperService } from '../helpers/helpers.service';
+import { CommonService } from '../common/common.service';
 import { PaginationDto } from '../common/dtos/pagination.dto';
 
 @Injectable()
@@ -19,7 +19,7 @@ export class CustomerService {
   constructor(
     @Inject('CustomerRepository')
     private readonly customerRepository: Repository<Customer>,
-    private readonly helperService: HelperService,
+    private readonly commonService: CommonService,
   ) {}
 
   async findAndCount({
@@ -230,7 +230,7 @@ export class CustomerService {
       ...customer,
       name: `Removed Customer`,
       surname: '',
-      external_id: await this.helperService.obfuscateExternalId(
+      external_id: await this.commonService.obfuscateExternalId(
         customer.external_id,
       ),
       deleted: true,

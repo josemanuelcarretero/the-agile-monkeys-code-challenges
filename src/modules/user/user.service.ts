@@ -10,7 +10,7 @@ import {
 import { UserNotFoundException } from './exceptions/user-not-found.exception';
 import { UserAlreadyExistsException } from './exceptions/user-already-exists.exception';
 import { Repository } from 'typeorm';
-import { HelperService } from '../helpers/helpers.service';
+import { CommonService } from '../common/common.service';
 import { randomBytes } from 'crypto';
 import { PaginationDto } from '../common/dtos/pagination.dto';
 
@@ -19,7 +19,7 @@ export class UserService {
   constructor(
     @Inject('UserRepository')
     private readonly userRepository: Repository<User>,
-    private readonly helperService: HelperService,
+    private readonly commonService: CommonService,
   ) {}
 
   async findAndCount({
@@ -160,7 +160,7 @@ export class UserService {
     try {
       const insertResult = await this.userRepository.insert({
         ...createUserDto,
-        password: await this.helperService.encrypt(createUserDto.password),
+        password: await this.commonService.encrypt(createUserDto.password),
       });
       return await this.userRepository.findOne(insertResult.identifiers[0].id);
     } catch (e) {
