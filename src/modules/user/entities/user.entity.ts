@@ -32,13 +32,21 @@ export class UserEntity extends BaseEntity {
   @Column()
   type: UserType;
 
-  @CreateDateColumn()
+  @CreateDateColumn({
+    type: 'timestamptz',
+    precision: 6,
+    default: () => 'CURRENT_TIMESTAMP(6)',
+  })
   created_at?: Date;
 
-  @UpdateDateColumn()
+  @UpdateDateColumn({
+    type: 'timestamptz',
+    precision: 6,
+    default: () => 'CURRENT_TIMESTAMP(6)',
+  })
   updated_at?: Date;
 
-  @Column({ nullable: true })
+  @Column({ type: 'timestamptz', precision: 6, nullable: true })
   deleted_at?: Date;
 
   constructor(params?: User) {

@@ -39,15 +39,18 @@ export class CustomerService {
 
     if (search.query) {
       query.andWhere(
-        'customer.name LIKE :query' +
+        'customer.id::text LIKE :query' +
+          'OR customer.name LIKE :query' +
           ' OR customer.surname LIKE :query' +
           ' OR customer.external_id LIKE :query' +
-          ' OR customer.created_by::text LIKE :query' +
-          ' OR customer.updated_by::text LIKE :query' +
           ' OR created_by_user.email LIKE :query' +
           ' OR updated_by_user.email LIKE :query',
         { query: `%${search.query}%` },
       );
+    }
+
+    if (search.filter_id) {
+      query.andWhere('customer.id = :id', { id: search.filter_id });
     }
 
     if (search.filter_name) {
@@ -67,39 +70,57 @@ export class CustomerService {
     }
 
     if (search.filter_created_at) {
-      query.andWhere('customer.created_at = :created_at', {
-        created_at: search.filter_created_at,
-      });
+      query.andWhere(
+        "date_trunc('milliseconds', customer.created_at) = :created_at",
+        {
+          created_at: search.filter_created_at,
+        },
+      );
     }
 
     if (search.filter_updated_at) {
-      query.andWhere('customer.updated_at = :updated_at', {
-        updated_at: search.filter_updated_at,
-      });
+      query.andWhere(
+        "date_trunc('milliseconds', customer.updated_at) = :updated_at",
+        {
+          updated_at: search.filter_updated_at,
+        },
+      );
     }
 
     if (search.filter_created_at_from) {
-      query.andWhere('customer.created_at >= :created_at_from', {
-        created_at_from: search.filter_created_at_from,
-      });
+      query.andWhere(
+        "date_trunc('milliseconds', customer.created_at) >= :created_at_from",
+        {
+          created_at_from: search.filter_created_at_from,
+        },
+      );
     }
 
     if (search.filter_created_at_to) {
-      query.andWhere('customer.created_at <= :created_at_to', {
-        created_at_to: search.filter_created_at_to,
-      });
+      query.andWhere(
+        "date_trunc('milliseconds', customer.created_at) <= :created_at_to",
+        {
+          created_at_to: search.filter_created_at_to,
+        },
+      );
     }
 
     if (search.filter_updated_at_from) {
-      query.andWhere('customer.updated_at >= :updated_at_from', {
-        updated_at_from: search.filter_updated_at_from,
-      });
+      query.andWhere(
+        "date_trunc('milliseconds', customer.updated_at) >= :updated_at_from",
+        {
+          updated_at_from: search.filter_updated_at_from,
+        },
+      );
     }
 
     if (search.filter_updated_at_to) {
-      query.andWhere('customer.updated_at <= :updated_at_to', {
-        updated_at_to: search.filter_updated_at_to,
-      });
+      query.andWhere(
+        "date_trunc('milliseconds', customer.updated_at) <= :updated_at_to",
+        {
+          updated_at_to: search.filter_updated_at_to,
+        },
+      );
     }
 
     if (search.filter_created_by) {

@@ -1,7 +1,7 @@
 import { IsEnum, IsOptional, IsString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
-enum OrderDirection {
+export enum OrderDirection {
   asc = 'ASC',
   desc = 'DESC',
 }

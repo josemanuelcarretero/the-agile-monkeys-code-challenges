@@ -32,21 +32,29 @@ export class CustomerEntity extends BaseEntity {
   @Column({ default: false })
   deleted: boolean;
 
-  @CreateDateColumn()
+  @CreateDateColumn({
+    type: 'timestamptz',
+    precision: 6,
+    default: () => 'CURRENT_TIMESTAMP(6)',
+  })
   created_at: Date;
 
   @ManyToOne(() => UserEntity, (user) => user.id)
   @JoinColumn({ name: 'created_by' })
   created_by: User;
 
-  @UpdateDateColumn()
+  @UpdateDateColumn({
+    type: 'timestamptz',
+    precision: 6,
+    default: () => 'CURRENT_TIMESTAMP(6)',
+  })
   updated_at: Date;
 
   @ManyToOne(() => UserEntity, (user) => user.id)
   @JoinColumn({ name: 'updated_by' })
   updated_by: User;
 
-  @Column({ nullable: true })
+  @Column({ type: 'timestamptz', precision: 6, nullable: true })
   deleted_at: Date;
 
   @ManyToOne(() => UserEntity, (user) => user.id, { nullable: true })

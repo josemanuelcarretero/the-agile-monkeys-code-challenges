@@ -36,13 +36,16 @@ export class UserService {
 
     if (search.query) {
       query.andWhere(
-        'user.name LIKE :query' +
-          ' OR user.surname LIKE :query' +
-          ' OR user.email LIKE :query' +
-          ' OR user.created_by::text LIKE :query' +
-          ' OR user.updated_by::text LIKE :query',
+        '"user"."id"::text LIKE :query' +
+          ' OR "user"."name" LIKE :query' +
+          ' OR "user"."surname" LIKE :query' +
+          ' OR "user"."email" LIKE :query',
         { query: `%${search.query}%` },
       );
+    }
+
+    if (search.filter_id) {
+      query.andWhere('user.id = :id', { id: search.filter_id });
     }
 
     if (search.filter_name) {
@@ -68,39 +71,57 @@ export class UserService {
     }
 
     if (search.filter_created_at) {
-      query.andWhere('user.created_at = :created_at', {
-        created_at: search.filter_created_at,
-      });
+      query.andWhere(
+        "date_trunc('milliseconds', user.created_at) = :created_at",
+        {
+          created_at: new Date(search.filter_created_at),
+        },
+      );
     }
 
     if (search.filter_updated_at) {
-      query.andWhere('user.updated_at = :updated_at', {
-        updated_at: search.filter_updated_at,
-      });
+      query.andWhere(
+        "date_trunc('milliseconds', user.updated_at) = :updated_at",
+        {
+          updated_at: new Date(search.filter_updated_at),
+        },
+      );
     }
 
     if (search.filter_created_at_from) {
-      query.andWhere('user.created_at >= :created_at_from', {
-        created_at_from: search.filter_created_at_from,
-      });
+      query.andWhere(
+        "date_trunc('milliseconds', user.created_at) >= :created_at_from",
+        {
+          created_at_from: new Date(search.filter_created_at_from),
+        },
+      );
     }
 
     if (search.filter_created_at_to) {
-      query.andWhere('user.created_at <= :created_at_to', {
-        created_at_to: search.filter_created_at_to,
-      });
+      query.andWhere(
+        "date_trunc('milliseconds', user.created_at) <= :created_at_to",
+        {
+          created_at_to: new Date(search.filter_created_at_to),
+        },
+      );
     }
 
     if (search.filter_updated_at_from) {
-      query.andWhere('user.updated_at >= :updated_at_from', {
-        updated_at_from: search.filter_updated_at_from,
-      });
+      query.andWhere(
+        "date_trunc('milliseconds', user.updated_at) >= :updated_at_from",
+        {
+          updated_at_from: new Date(search.filter_updated_at_from),
+        },
+      );
     }
 
     if (search.filter_updated_at_to) {
-      query.andWhere('user.updated_at <= :updated_at_to', {
-        updated_at_to: search.filter_updated_at_to,
-      });
+      query.andWhere(
+        "date_trunc('milliseconds', user.updated_at) <= :updated_at_to",
+        {
+          updated_at_to: new Date(search.filter_updated_at_to),
+        },
+      );
     }
 
     query.orderBy(`user.${order.order}`, order.dir);
@@ -168,7 +189,7 @@ export class UserService {
       ...user,
       ...updateUserDto,
       ...(updateUserDto.password
-        ? { password: await this.helperService.encrypt(updateUserDto.password) }
+        ? { password: await this.commonService.encrypt(updateUserDto.password) }
         : {}),
     });
   }
@@ -184,7 +205,7 @@ export class UserService {
       ...user,
       name: `Removed User`,
       surname: '',
-      email: await this.helperService.obfuscateEmail(user.email),
+      email: await this.commonService.obfuscateEmail(user.email),
       password: randomBytes(16).toString('hex'),
       deleted: true,
       deleted_at: new Date(),

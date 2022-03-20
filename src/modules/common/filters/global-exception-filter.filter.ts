@@ -24,13 +24,13 @@ export const getCode = (exception: unknown): string => {
     getErrorMessage(exception)
       // Remove phrase before the first double dot
       .replace(/(.*)(:.*)+/, '$1')
+      // Remove special characters
+      .replace(/[^a-zA-Z0-9 ]/g, ' ')
       // Capitalize first letter of each word
       .toLowerCase()
       .replace(/(^\w)|(\s\w)/g, (match) => match.toUpperCase())
       // Remove spaces
-      .replace(/ /g, '')
-      // Remove special characters
-      .replace(/[^a-zA-Z0-9]/g, '') + 'Error'
+      .replace(/ /g, '') + 'Error'
   );
 };
 

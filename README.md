@@ -94,7 +94,13 @@ jwt_expires_in=60d
 app_domain=crm.josemanuelcarretero.me
 # For download the images uploaded locally - only for development purposes
 app_base_url=http://localhost:3000
-app_prefix_images=/v1/image/
+# For the e2e tests. The e2e tests need a database separated from main database. 
+testing_dbtype=postgres
+testing_dbhost=localhost
+testing_dbport=5432
+testing_dbusername=8288febf97e340c8891f5e44c929c73e
+testing_dbpassword=8288febf97e340c8891f5e44c929c73e
+testing_dbdatabase=testing
 ```
 
 4. Run the following command to execute the migrations (The database must be created and empty before running the migration):
@@ -128,17 +134,13 @@ $ npm run start:prod
 ```
 
 ## Test
+For testing it is required to have an auxiliary database different from the production database
 
 ```bash
-# unit tests
-$ npm run test
-
 # e2e tests
 $ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
 ```
+
 
 ## Credits
 
@@ -150,4 +152,4 @@ Author - Nest - [Kamil Myśliwiec](https://kamilmysliwiec.com)
 
 API Test - The CRM Service is [MIT licensed](LICENSE.txt).
 
-Nest is [MIT licensed](LICENSE).
+Nest is [MIT licensed](LICENSE.txt).
