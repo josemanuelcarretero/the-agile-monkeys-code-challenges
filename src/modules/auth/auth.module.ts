@@ -6,7 +6,7 @@ import { UserModule } from '../user/user.module';
 import { ConfigModule } from '../config/config.module';
 import { HelperModule } from '../helpers/helpers.module';
 import { AppConfig } from '../config/entities/app-config.entity';
-import { JwtStrategy } from './jwt.strategy';
+import { JwtStrategy } from './providers/jwt.strategy';
 
 @Module({})
 export class AuthModule {
