@@ -3,7 +3,7 @@ import { AuthService } from './auth.service';
 import { LoginDto } from './dtos';
 import { LoginResponse } from './responses';
 import { UserService } from '../user/user.service';
-import { HelperService } from '../helpers/helpers.service';
+import { CommonService } from '../common/common.service';
 import { PasswordDoesNotMatchException } from './exceptions/password-does-not-match.exception';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
@@ -13,7 +13,7 @@ export class AuthController {
   constructor(
     private authService: AuthService,
     private userService: UserService,
-    private helperService: HelperService,
+    private commonService: CommonService,
   ) {}
 
   @Post('in')
@@ -27,7 +27,7 @@ export class AuthController {
     const { email, password } = loginDTO;
     const user = await this.userService.findByEmail(email);
 
-    const valid = await this.helperService.matchPassword(
+    const valid = await this.commonService.matchPassword(
       user.password,
       password,
     );

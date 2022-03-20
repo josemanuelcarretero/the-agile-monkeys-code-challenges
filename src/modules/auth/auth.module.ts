@@ -4,9 +4,9 @@ import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { UserModule } from '../user/user.module';
 import { ConfigModule } from '../config/config.module';
-import { HelperModule } from '../helpers/helpers.module';
+import { CommonModule } from '../common/common.module';
 import { AppConfig } from '../config/entities/app-config.entity';
-import { JwtStrategy } from './jwt.strategy';
+import { JwtStrategy } from './providers/jwt.strategy';
 
 @Module({})
 export class AuthModule {
@@ -16,7 +16,7 @@ export class AuthModule {
       imports: [
         ConfigModule,
         UserModule.registerAsync(testing),
-        HelperModule,
+        CommonModule,
         JwtModule.registerAsync({
           imports: [ConfigModule],
           inject: ['AppConfig'],

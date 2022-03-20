@@ -2,7 +2,7 @@ import { DynamicModule, Module } from '@nestjs/common';
 import { ConfigModule } from './modules/config/config.module';
 import { DatabaseModule } from './modules/database/database.module';
 import { UserModule } from './modules/user/user.module';
-import { HelperModule } from './modules/helpers/helpers.module';
+import { CommonModule } from './modules/common/common.module';
 import { CustomerModule } from './modules/customer/customer.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { ImageModule } from './modules/image/image.module';
@@ -16,7 +16,7 @@ export class AppModule {
       imports: [
         ConfigModule,
         DatabaseModule.registerAsync(testing),
-        HelperModule,
+        CommonModule,
         AuthModule.registerAsync(testing),
         UserModule.registerAsync(testing),
         CustomerModule.registerAsync(testing),
