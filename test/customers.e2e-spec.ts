@@ -12,7 +12,6 @@ import { v4 as uuid } from 'uuid';
 import { Customer } from '../src/modules/customer/models/customer.model';
 import { UtilsModule } from './modules/utils/utils.module';
 import { UtilService } from './modules/utils/utils.service';
-import { before } from '@nestjs/swagger/dist/plugin';
 
 describe('CustomerController (e2c)', () => {
   let app: NestFastifyApplication;
@@ -51,13 +50,13 @@ describe('CustomerController (e2c)', () => {
   });
 
   it('/v1/customers Customer successfully created (POST)', async () => {
-    const userSigned = await utilService.getUserSigned();
+    const { access_token, user } = await utilService.getUserSigned();
     const customer = await utilService.generateRandomCustomer();
     await customerRepository.delete({ external_id: customer.external_id });
 
     return request(app.getHttpServer())
       .post('/v1/customers')
-      .set('Authorization', `Bearer ${userSigned.access_token}`)
+      .set('Authorization', `Bearer ${access_token}`)
       .send(customer)
       .expect(201)
       .then((response) => {
@@ -75,22 +74,22 @@ describe('CustomerController (e2c)', () => {
             created_at: expect.any(String),
             updated_at: expect.any(String),
             created_by: {
-              id: userSigned.id,
-              name: userSigned.name,
-              surname: userSigned.surname,
-              email: userSigned.email,
-              type: userSigned.type,
-              created_at: userSigned.created_at,
-              updated_at: userSigned.updated_at,
+              id: user.id,
+              name: user.name,
+              surname: user.surname,
+              email: user.email,
+              type: user.type,
+              created_at: user.created_at,
+              updated_at: user.updated_at,
             },
             updated_by: {
-              id: userSigned.id,
-              name: userSigned.name,
-              surname: userSigned.surname,
-              email: userSigned.email,
-              type: userSigned.type,
-              created_at: userSigned.created_at,
-              updated_at: userSigned.updated_at,
+              id: user.id,
+              name: user.name,
+              surname: user.surname,
+              email: user.email,
+              type: user.type,
+              created_at: user.created_at,
+              updated_at: user.updated_at,
             },
           },
         });
@@ -98,9 +97,9 @@ describe('CustomerController (e2c)', () => {
   });
 
   it('/v1/customers/:id Customer successfully updated (PUT)', async () => {
-    const userSignedFirst = await utilService.getUserSigned();
-    const userSignedSecond = await utilService.getUserSigned();
-    const customer = await utilService.insertRandomCustomer(userSignedFirst);
+    const { user, access_token } = await utilService.getUserSigned();
+    const otherUser = await utilService.insertRandomUser();
+    const customer = await utilService.insertRandomCustomer(otherUser);
     const newDataForCustomer = await utilService.generateRandomCustomer();
     await customerRepository.delete({
       external_id: newDataForCustomer.external_id,
@@ -108,7 +107,7 @@ describe('CustomerController (e2c)', () => {
 
     return request(app.getHttpServer())
       .put(`/v1/customers/${customer.id}`)
-      .set('Authorization', `Bearer ${userSignedSecond.access_token}`)
+      .set('Authorization', `Bearer ${access_token}`)
       .send(newDataForCustomer)
       .expect(200)
       .then((response) => {
@@ -126,22 +125,22 @@ describe('CustomerController (e2c)', () => {
             created_at: customer.created_at,
             updated_at: expect.any(String),
             created_by: {
-              id: userSignedFirst.id,
-              name: userSignedFirst.name,
-              surname: userSignedFirst.surname,
-              email: userSignedFirst.email,
-              type: userSignedFirst.type,
-              created_at: userSignedFirst.created_at,
-              updated_at: userSignedFirst.updated_at,
+              id: otherUser.id,
+              name: otherUser.name,
+              surname: otherUser.surname,
+              email: otherUser.email,
+              type: otherUser.type,
+              created_at: otherUser.created_at,
+              updated_at: otherUser.updated_at,
             },
             updated_by: {
-              id: userSignedSecond.id,
-              name: userSignedSecond.name,
-              surname: userSignedSecond.surname,
-              email: userSignedSecond.email,
-              type: userSignedSecond.type,
-              created_at: userSignedSecond.created_at,
-              updated_at: userSignedSecond.updated_at,
+              id: user.id,
+              name: user.name,
+              surname: user.surname,
+              email: user.email,
+              type: user.type,
+              created_at: user.created_at,
+              updated_at: user.updated_at,
             },
           },
         });
@@ -149,12 +148,12 @@ describe('CustomerController (e2c)', () => {
   });
 
   it('/v1/customers/:id Customer successfully retrieved (GET)', async () => {
-    const userSigned = await utilService.getUserSigned();
-    const customer = await utilService.insertRandomCustomer(userSigned);
+    const { access_token, user } = await utilService.getUserSigned();
+    const customer = await utilService.insertRandomCustomer(user);
 
     return request(app.getHttpServer())
       .get(`/v1/customers/${customer.id}`)
-      .set('Authorization', `Bearer ${userSigned.access_token}`)
+      .set('Authorization', `Bearer ${access_token}`)
       .expect(200)
       .then((response) => {
         const { body } = response;
@@ -171,22 +170,22 @@ describe('CustomerController (e2c)', () => {
             created_at: customer.created_at,
             updated_at: customer.updated_at,
             created_by: {
-              id: userSigned.id,
-              name: userSigned.name,
-              surname: userSigned.surname,
-              email: userSigned.email,
-              type: userSigned.type,
-              created_at: userSigned.created_at,
-              updated_at: userSigned.updated_at,
+              id: user.id,
+              name: user.name,
+              surname: user.surname,
+              email: user.email,
+              type: user.type,
+              created_at: user.created_at,
+              updated_at: user.updated_at,
             },
             updated_by: {
-              id: userSigned.id,
-              name: userSigned.name,
-              surname: userSigned.surname,
-              email: userSigned.email,
-              type: userSigned.type,
-              created_at: userSigned.created_at,
-              updated_at: userSigned.updated_at,
+              id: user.id,
+              name: user.name,
+              surname: user.surname,
+              email: user.email,
+              type: user.type,
+              created_at: user.created_at,
+              updated_at: user.updated_at,
             },
           },
         });
@@ -194,12 +193,12 @@ describe('CustomerController (e2c)', () => {
   });
 
   it('/v1/customers/:id Customer successfully deleted (DELETE)', async () => {
-    const userSigned = await utilService.getUserSigned();
-    const customer = await utilService.insertRandomCustomer(userSigned);
+    const { access_token, user } = await utilService.getUserSigned();
+    const customer = await utilService.insertRandomCustomer(user);
 
     return request(app.getHttpServer())
       .delete(`/v1/customers/${customer.id}`)
-      .set('Authorization', `Bearer ${userSigned.access_token}`)
+      .set('Authorization', `Bearer ${access_token}`)
       .expect(200)
       .then((response) => {
         const { body } = response;
@@ -213,15 +212,15 @@ describe('CustomerController (e2c)', () => {
   });
 
   it('/v1/customers Customer list successfully retrieved (GET)', async () => {
-    const userSigned = await utilService.getUserSigned();
+    const { access_token, user } = await utilService.getUserSigned();
     const customer = [
-      await utilService.insertRandomCustomer(userSigned),
-      await utilService.insertRandomCustomer(userSigned),
+      await utilService.insertRandomCustomer(user),
+      await utilService.insertRandomCustomer(user),
     ];
 
     return request(app.getHttpServer())
       .get(`/v1/customers`)
-      .set('Authorization', `Bearer ${userSigned.access_token}`)
+      .set('Authorization', `Bearer ${access_token}`)
       .expect(200)
       .then((response) => {
         const { body } = response;
@@ -239,22 +238,22 @@ describe('CustomerController (e2c)', () => {
               created_at: customer[0].created_at,
               updated_at: customer[0].updated_at,
               created_by: {
-                id: userSigned.id,
-                name: userSigned.name,
-                surname: userSigned.surname,
-                email: userSigned.email,
-                type: userSigned.type,
-                created_at: userSigned.created_at,
-                updated_at: userSigned.updated_at,
+                id: user.id,
+                name: user.name,
+                surname: user.surname,
+                email: user.email,
+                type: user.type,
+                created_at: user.created_at,
+                updated_at: user.updated_at,
               },
               updated_by: {
-                id: userSigned.id,
-                name: userSigned.name,
-                surname: userSigned.surname,
-                email: userSigned.email,
-                type: userSigned.type,
-                created_at: userSigned.created_at,
-                updated_at: userSigned.updated_at,
+                id: user.id,
+                name: user.name,
+                surname: user.surname,
+                email: user.email,
+                type: user.type,
+                created_at: user.created_at,
+                updated_at: user.updated_at,
               },
             },
             {
@@ -266,22 +265,22 @@ describe('CustomerController (e2c)', () => {
               created_at: customer[1].created_at,
               updated_at: customer[1].updated_at,
               created_by: {
-                id: userSigned.id,
-                name: userSigned.name,
-                surname: userSigned.surname,
-                email: userSigned.email,
-                type: userSigned.type,
-                created_at: userSigned.created_at,
-                updated_at: userSigned.updated_at,
+                id: user.id,
+                name: user.name,
+                surname: user.surname,
+                email: user.email,
+                type: user.type,
+                created_at: user.created_at,
+                updated_at: user.updated_at,
               },
               updated_by: {
-                id: userSigned.id,
-                name: userSigned.name,
-                surname: userSigned.surname,
-                email: userSigned.email,
-                type: userSigned.type,
-                created_at: userSigned.created_at,
-                updated_at: userSigned.updated_at,
+                id: user.id,
+                name: user.name,
+                surname: user.surname,
+                email: user.email,
+                type: user.type,
+                created_at: user.created_at,
+                updated_at: user.updated_at,
               },
             },
           ],
@@ -300,12 +299,12 @@ describe('CustomerController (e2c)', () => {
   });
 
   it('/v1/customers Customer already exists (POST)', async () => {
-    const userSigned = await utilService.getUserSigned();
-    const customer = await utilService.insertRandomCustomer(userSigned);
+    const { access_token, user } = await utilService.getUserSigned();
+    const customer = await utilService.insertRandomCustomer(user);
 
     return request(app.getHttpServer())
       .post(`/v1/customers`)
-      .set('Authorization', `Bearer ${userSigned.access_token}`)
+      .set('Authorization', `Bearer ${access_token}`)
       .send({
         name: customer.name,
         surname: customer.surname,
@@ -325,16 +324,16 @@ describe('CustomerController (e2c)', () => {
   });
 
   it('/v1/customers/:id Customer already exists (PUT)', async () => {
-    const userSigned = await utilService.getUserSigned();
+    const { access_token, user } = await utilService.getUserSigned();
     const customerSavedReadyToUpdate = await utilService.insertRandomCustomer(
-      userSigned,
+      user,
     );
     const customerSavedReadyToThrowConflict =
-      await utilService.insertRandomCustomer(userSigned);
+      await utilService.insertRandomCustomer(user);
 
     return request(app.getHttpServer())
       .put(`/v1/customers/${customerSavedReadyToUpdate.id}`)
-      .set('Authorization', `Bearer ${userSigned.access_token}`)
+      .set('Authorization', `Bearer ${access_token}`)
       .send({
         name: customerSavedReadyToThrowConflict.name,
         surname: customerSavedReadyToThrowConflict.surname,
@@ -354,11 +353,11 @@ describe('CustomerController (e2c)', () => {
   });
 
   it('/v1/customers/:id Customer not found (GET)', async () => {
-    const userSigned = await utilService.getUserSigned();
+    const { access_token } = await utilService.getUserSigned();
 
     return request(app.getHttpServer())
       .get(`/v1/customers/${uuid()}`)
-      .set('Authorization', `Bearer ${userSigned.access_token}`)
+      .set('Authorization', `Bearer ${access_token}`)
       .expect(404)
       .then((response) => {
         const { body } = response;
@@ -372,12 +371,12 @@ describe('CustomerController (e2c)', () => {
   });
 
   it('/v1/customers/:id Customer not found (PUT)', async () => {
-    const userSigned = await utilService.getUserSigned();
+    const { access_token } = await utilService.getUserSigned();
     const customer = await utilService.generateRandomCustomer();
 
     return request(app.getHttpServer())
       .put(`/v1/customers/${uuid()}`)
-      .set('Authorization', `Bearer ${userSigned.access_token}`)
+      .set('Authorization', `Bearer ${access_token}`)
       .send({
         name: customer.name,
         surname: customer.surname,
@@ -397,11 +396,11 @@ describe('CustomerController (e2c)', () => {
   });
 
   it('/v1/customers/:id Customer not found (DELETE)', async () => {
-    const userSigned = await utilService.getUserSigned();
+    const { access_token } = await utilService.getUserSigned();
 
     return request(app.getHttpServer())
       .delete(`/v1/customers/${uuid()}`)
-      .set('Authorization', `Bearer ${userSigned.access_token}`)
+      .set('Authorization', `Bearer ${access_token}`)
       .expect(404)
       .then((response) => {
         const { body } = response;
@@ -414,13 +413,74 @@ describe('CustomerController (e2c)', () => {
       });
   });
 
+  it('/v1/customers/:id Id must be a uuid (GET)', async () => {
+    const { access_token } = await utilService.getUserSigned();
+
+    return request(app.getHttpServer())
+      .get(`/v1/customers/123`)
+      .set('Authorization', `Bearer ${access_token}`)
+      .expect(400)
+      .then((response) => {
+        const { body } = response;
+        expect(body).toEqual({
+          success: false,
+          error: 'Id must be a uuid',
+          code: 'IdMustBeAUuidError',
+          status: 400,
+        });
+      });
+  });
+
+  it('/v1/customers/:id Id must be a uuid (PUT)', async () => {
+    const { access_token } = await utilService.getUserSigned();
+    const customer = await utilService.generateRandomCustomer();
+
+    return request(app.getHttpServer())
+      .put(`/v1/customers/123`)
+      .set('Authorization', `Bearer ${access_token}`)
+      .send({
+        name: customer.name,
+        surname: customer.surname,
+        external_id: customer.external_id,
+        image: customer.image,
+      })
+      .expect(400)
+      .then((response) => {
+        const { body } = response;
+        expect(body).toEqual({
+          success: false,
+          error: 'Id must be a uuid',
+          code: 'IdMustBeAUuidError',
+          status: 400,
+        });
+      });
+  });
+
+  it('/v1/customers/:id Id must be a uuid (DELETE)', async () => {
+    const { access_token } = await utilService.getUserSigned();
+
+    return request(app.getHttpServer())
+      .delete(`/v1/customers/123`)
+      .set('Authorization', `Bearer ${access_token}`)
+      .expect(400)
+      .then((response) => {
+        const { body } = response;
+        expect(body).toEqual({
+          success: false,
+          error: 'Id must be a uuid',
+          code: 'IdMustBeAUuidError',
+          status: 400,
+        });
+      });
+  });
+
   it('/v1/customers Name must be a string (POST)', async () => {
-    const userSigned = await utilService.getUserSigned();
+    const { access_token } = await utilService.getUserSigned();
     const customer = await utilService.generateRandomCustomer();
 
     return request(app.getHttpServer())
       .post(`/v1/customers`)
-      .set('Authorization', `Bearer ${userSigned.access_token}`)
+      .set('Authorization', `Bearer ${access_token}`)
       .send({
         name: 1,
         surname: customer.surname,
@@ -440,12 +500,12 @@ describe('CustomerController (e2c)', () => {
   });
 
   it('/v1/customers/:id Name must be a string (PUT)', async () => {
-    const userSigned = await utilService.getUserSigned();
-    const customer = await utilService.generateRandomCustomer(userSigned);
+    const { access_token, user } = await utilService.getUserSigned();
+    const customer = await utilService.generateRandomCustomer(user);
 
     return request(app.getHttpServer())
       .put(`/v1/customers/${uuid()}`)
-      .set('Authorization', `Bearer ${userSigned.access_token}`)
+      .set('Authorization', `Bearer ${access_token}`)
       .send({
         name: 1,
         surname: customer.surname,
@@ -465,12 +525,12 @@ describe('CustomerController (e2c)', () => {
   });
 
   it('/v1/customers Surname must be a string (POST)', async () => {
-    const userSigned = await utilService.getUserSigned();
-    const customer = await utilService.generateRandomCustomer(userSigned);
+    const { access_token, user } = await utilService.getUserSigned();
+    const customer = await utilService.generateRandomCustomer(user);
 
     return request(app.getHttpServer())
       .post(`/v1/customers`)
-      .set('Authorization', `Bearer ${userSigned.access_token}`)
+      .set('Authorization', `Bearer ${access_token}`)
       .send({
         name: customer.name,
         surname: 1,
@@ -490,12 +550,12 @@ describe('CustomerController (e2c)', () => {
   });
 
   it('/v1/customers/:id Surname must be a string (PUT)', async () => {
-    const userSigned = await utilService.getUserSigned();
-    const customer = await utilService.generateRandomCustomer(userSigned);
+    const { access_token, user } = await utilService.getUserSigned();
+    const customer = await utilService.generateRandomCustomer(user);
 
     return request(app.getHttpServer())
       .put(`/v1/customers/${uuid()}`)
-      .set('Authorization', `Bearer ${userSigned.access_token}`)
+      .set('Authorization', `Bearer ${access_token}`)
       .send({
         name: customer.name,
         surname: 1,
@@ -515,12 +575,12 @@ describe('CustomerController (e2c)', () => {
   });
 
   it('/v1/customers External id must be a string (POST)', async () => {
-    const userSigned = await utilService.getUserSigned();
-    const customer = await utilService.generateRandomCustomer(userSigned);
+    const { access_token, user } = await utilService.getUserSigned();
+    const customer = await utilService.generateRandomCustomer(user);
 
     return request(app.getHttpServer())
       .post(`/v1/customers`)
-      .set('Authorization', `Bearer ${userSigned.access_token}`)
+      .set('Authorization', `Bearer ${access_token}`)
       .send({
         name: customer.name,
         surname: customer.surname,
@@ -540,12 +600,12 @@ describe('CustomerController (e2c)', () => {
   });
 
   it('/v1/customers/:id External id must be a string (PUT)', async () => {
-    const userSigned = await utilService.getUserSigned();
-    const customer = await utilService.generateRandomCustomer(userSigned);
+    const { access_token, user } = await utilService.getUserSigned();
+    const customer = await utilService.generateRandomCustomer(user);
 
     return request(app.getHttpServer())
       .put(`/v1/customers/${uuid()}`)
-      .set('Authorization', `Bearer ${userSigned.access_token}`)
+      .set('Authorization', `Bearer ${access_token}`)
       .send({
         name: customer.name,
         surname: customer.surname,
@@ -565,12 +625,12 @@ describe('CustomerController (e2c)', () => {
   });
 
   it('/v1/customers Image must be a string (POST)', async () => {
-    const userSigned = await utilService.getUserSigned();
-    const customer = await utilService.generateRandomCustomer(userSigned);
+    const { access_token, user } = await utilService.getUserSigned();
+    const customer = await utilService.generateRandomCustomer(user);
 
     return request(app.getHttpServer())
       .post(`/v1/customers`)
-      .set('Authorization', `Bearer ${userSigned.access_token}`)
+      .set('Authorization', `Bearer ${access_token}`)
       .send({
         name: customer.name,
         surname: customer.surname,
@@ -590,12 +650,12 @@ describe('CustomerController (e2c)', () => {
   });
 
   it('/v1/customers/:id Image must be a string (PUT)', async () => {
-    const userSigned = await utilService.getUserSigned();
-    const customer = await utilService.generateRandomCustomer(userSigned);
+    const { access_token, user } = await utilService.getUserSigned();
+    const customer = await utilService.generateRandomCustomer(user);
 
     return request(app.getHttpServer())
       .put(`/v1/customers/${uuid()}`)
-      .set('Authorization', `Bearer ${userSigned.access_token}`)
+      .set('Authorization', `Bearer ${access_token}`)
       .send({
         name: customer.name,
         surname: customer.surname,
@@ -615,12 +675,12 @@ describe('CustomerController (e2c)', () => {
   });
 
   it('/v1/customers Name should not be empty (POST)', async () => {
-    const userSigned = await utilService.getUserSigned();
-    const customer = await utilService.generateRandomCustomer(userSigned);
+    const { access_token, user } = await utilService.getUserSigned();
+    const customer = await utilService.generateRandomCustomer(user);
 
     return request(app.getHttpServer())
       .post(`/v1/customers`)
-      .set('Authorization', `Bearer ${userSigned.access_token}`)
+      .set('Authorization', `Bearer ${access_token}`)
       .send({
         name: '',
         surname: customer.surname,
@@ -640,12 +700,12 @@ describe('CustomerController (e2c)', () => {
   });
 
   it('/v1/customers/:id Name should not be empty (PUT)', async () => {
-    const userSigned = await utilService.getUserSigned();
-    const customer = await utilService.generateRandomCustomer(userSigned);
+    const { access_token, user } = await utilService.getUserSigned();
+    const customer = await utilService.generateRandomCustomer(user);
 
     return request(app.getHttpServer())
       .put(`/v1/customers/${uuid()}`)
-      .set('Authorization', `Bearer ${userSigned.access_token}`)
+      .set('Authorization', `Bearer ${access_token}`)
       .send({
         name: '',
         surname: customer.surname,
@@ -665,12 +725,12 @@ describe('CustomerController (e2c)', () => {
   });
 
   it('/v1/customers Surname should not be empty (POST)', async () => {
-    const userSigned = await utilService.getUserSigned();
-    const customer = await utilService.generateRandomCustomer(userSigned);
+    const { access_token, user } = await utilService.getUserSigned();
+    const customer = await utilService.generateRandomCustomer(user);
 
     return request(app.getHttpServer())
       .post(`/v1/customers`)
-      .set('Authorization', `Bearer ${userSigned.access_token}`)
+      .set('Authorization', `Bearer ${access_token}`)
       .send({
         name: customer.name,
         surname: '',
@@ -690,12 +750,12 @@ describe('CustomerController (e2c)', () => {
   });
 
   it('/v1/customers/:id Surname should not be empty (PUT)', async () => {
-    const userSigned = await utilService.getUserSigned();
-    const customer = await utilService.generateRandomCustomer(userSigned);
+    const { access_token, user } = await utilService.getUserSigned();
+    const customer = await utilService.generateRandomCustomer(user);
 
     return request(app.getHttpServer())
       .put(`/v1/customers/${uuid()}`)
-      .set('Authorization', `Bearer ${userSigned.access_token}`)
+      .set('Authorization', `Bearer ${access_token}`)
       .send({
         name: customer.name,
         surname: '',
@@ -715,12 +775,12 @@ describe('CustomerController (e2c)', () => {
   });
 
   it('/v1/customers External id should not be empty (POST)', async () => {
-    const userSigned = await utilService.getUserSigned();
-    const customer = await utilService.generateRandomCustomer(userSigned);
+    const { access_token, user } = await utilService.getUserSigned();
+    const customer = await utilService.generateRandomCustomer(user);
 
     return request(app.getHttpServer())
       .post(`/v1/customers`)
-      .set('Authorization', `Bearer ${userSigned.access_token}`)
+      .set('Authorization', `Bearer ${access_token}`)
       .send({
         name: customer.name,
         surname: customer.surname,
@@ -740,12 +800,12 @@ describe('CustomerController (e2c)', () => {
   });
 
   it('/v1/customers/:id External id should not be empty (PUT)', async () => {
-    const userSigned = await utilService.getUserSigned();
-    const customer = await utilService.generateRandomCustomer(userSigned);
+    const { access_token, user } = await utilService.getUserSigned();
+    const customer = await utilService.generateRandomCustomer(user);
 
     return request(app.getHttpServer())
       .put(`/v1/customers/${uuid()}`)
-      .set('Authorization', `Bearer ${userSigned.access_token}`)
+      .set('Authorization', `Bearer ${access_token}`)
       .send({
         name: customer.name,
         surname: customer.surname,

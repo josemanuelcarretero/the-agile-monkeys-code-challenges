@@ -51,13 +51,13 @@ describe('UserController (e2e)', () => {
   });
 
   it('/v1/users User successfully created (POST)', async () => {
-    const userSigned = await utilService.getUserSigned();
+    const { access_token } = await utilService.getUserSigned();
     const user = await utilService.generateRandomUser();
     await userRepository.delete({ email: user.email });
 
     return request(app.getHttpServer())
       .post('/v1/users')
-      .set('Authorization', `Bearer ${userSigned.access_token}`)
+      .set('Authorization', `Bearer ${access_token}`)
       .send(user)
       .expect(201)
       .then((response) => {
@@ -78,7 +78,7 @@ describe('UserController (e2e)', () => {
   });
 
   it('/v1/users/:id User successfully updated (PUT)', async () => {
-    const userSigned = await utilService.getUserSigned();
+    const { access_token } = await utilService.getUserSigned();
     const userToUpdated = await utilService.generateRandomUser();
     const userToUpdatedWithNewData = await utilService.generateRandomUser();
     await userRepository.delete({ email: userToUpdated.email });
@@ -88,7 +88,7 @@ describe('UserController (e2e)', () => {
 
     return request(app.getHttpServer())
       .put(`/v1/users/${userSavedReadyToUpdated.id}`)
-      .set('Authorization', `Bearer ${userSigned.access_token}`)
+      .set('Authorization', `Bearer ${access_token}`)
       .send(userToUpdatedWithNewData)
       .then((response) => {
         const { body } = response;
@@ -111,12 +111,12 @@ describe('UserController (e2e)', () => {
   });
 
   it('/v1/users/:id User successfully retrieved (GET)', async () => {
-    const userSigned = await utilService.getUserSigned();
+    const { access_token } = await utilService.getUserSigned();
     const user = await utilService.insertRandomUser();
 
     return request(app.getHttpServer())
       .get(`/v1/users/${user.id}`)
-      .set('Authorization', `Bearer ${userSigned.access_token}`)
+      .set('Authorization', `Bearer ${access_token}`)
       .expect(200)
       .then((response) => {
         const { body } = response;
@@ -138,14 +138,14 @@ describe('UserController (e2e)', () => {
   });
 
   it('/v1/users/:id User successfully deleted (DELETE)', async () => {
-    const userSigned = await utilService.getUserSigned();
+    const { access_token } = await utilService.getUserSigned();
     const user = await utilService.generateRandomUser();
     await userRepository.delete({ email: user.email });
     const userSavedReadyToDeleted = await utilService.insertRandomUser(user);
 
     return request(app.getHttpServer())
       .delete(`/v1/users/${userSavedReadyToDeleted.id}`)
-      .set('Authorization', `Bearer ${userSigned.access_token}`)
+      .set('Authorization', `Bearer ${access_token}`)
       .expect(200)
       .then((response) => {
         const { body } = response;
@@ -159,7 +159,7 @@ describe('UserController (e2e)', () => {
   });
 
   it('/v1/users User list successfully retrieved (GET)', async () => {
-    const userSigned = await utilService.getUserSigned();
+    const { access_token, user } = await utilService.getUserSigned();
     const usersSavedReadyToRetrieved = [
       await utilService.insertRandomUser(),
       await utilService.insertRandomUser(),
@@ -167,7 +167,7 @@ describe('UserController (e2e)', () => {
 
     return request(app.getHttpServer())
       .get(`/v1/users`)
-      .set('Authorization', `Bearer ${userSigned.access_token}`)
+      .set('Authorization', `Bearer ${access_token}`)
       .expect(200)
       .then((response) => {
         const { body } = response;
@@ -177,13 +177,13 @@ describe('UserController (e2e)', () => {
           code: 'UserListSuccessfullyRetrievedResponse',
           data: [
             {
-              id: userSigned.id,
-              name: userSigned.name,
-              email: userSigned.email,
-              surname: userSigned.surname,
-              type: userSigned.type,
-              created_at: userSigned.created_at,
-              updated_at: userSigned.updated_at,
+              id: user.id,
+              name: user.name,
+              email: user.email,
+              surname: user.surname,
+              type: user.type,
+              created_at: user.created_at,
+              updated_at: user.updated_at,
             },
             {
               id: usersSavedReadyToRetrieved[0].id,
@@ -219,15 +219,15 @@ describe('UserController (e2e)', () => {
   });
 
   it('/v1/users User already exists (POST)', async () => {
-    const userSigned = await utilService.getUserSigned();
+    const { access_token } = await utilService.getUserSigned();
     const user = await utilService.insertRandomUser();
 
     return request(app.getHttpServer())
       .post(`/v1/users`)
-      .set('Authorization', `Bearer ${userSigned.access_token}`)
+      .set('Authorization', `Bearer ${access_token}`)
       .send({
         name: user.name,
-        email: userSigned.email,
+        email: user.email,
         password: user.password,
         surname: user.surname,
         type: user.type,
@@ -245,15 +245,15 @@ describe('UserController (e2e)', () => {
   });
 
   it('/v1/users/:id User already exists (PUT)', async () => {
-    const userSigned = await utilService.getUserSigned();
-    const user = await utilService.insertRandomUser();
+    const { access_token, user } = await utilService.getUserSigned();
+    const otherUser = await utilService.insertRandomUser();
 
     return request(app.getHttpServer())
-      .put(`/v1/users/${user.id}`)
-      .set('Authorization', `Bearer ${userSigned.access_token}`)
+      .put(`/v1/users/${otherUser.id}`)
+      .set('Authorization', `Bearer ${access_token}`)
       .send({
         name: user.name,
-        email: userSigned.email,
+        email: user.email,
         password: user.password,
         surname: user.surname,
         type: user.type,
@@ -271,11 +271,11 @@ describe('UserController (e2e)', () => {
   });
 
   it('/v1/users/:id User not found (GET)', async () => {
-    const userSigned = await utilService.getUserSigned();
+    const { access_token } = await utilService.getUserSigned();
 
     return request(app.getHttpServer())
       .get(`/v1/users/${uuid()}`)
-      .set('Authorization', `Bearer ${userSigned.access_token}`)
+      .set('Authorization', `Bearer ${access_token}`)
       .expect(404)
       .then((response) => {
         const { body } = response;
@@ -289,12 +289,12 @@ describe('UserController (e2e)', () => {
   });
 
   it('/v1/users/:id User not found (PUT)', async () => {
-    const userSigned = await utilService.getUserSigned();
+    const { access_token } = await utilService.getUserSigned();
     const user = await utilService.insertRandomUser();
 
     return request(app.getHttpServer())
       .put(`/v1/users/${uuid()}`)
-      .set('Authorization', `Bearer ${userSigned.access_token}`)
+      .set('Authorization', `Bearer ${access_token}`)
       .send({
         name: user.name,
         email: user.email,
@@ -315,11 +315,11 @@ describe('UserController (e2e)', () => {
   });
 
   it('/v1/users/:id User not found (DELETE)', async () => {
-    const userSigned = await utilService.getUserSigned();
+    const { access_token } = await utilService.getUserSigned();
 
     return request(app.getHttpServer())
       .delete(`/v1/users/${uuid()}`)
-      .set('Authorization', `Bearer ${userSigned.access_token}`)
+      .set('Authorization', `Bearer ${access_token}`)
       .expect(404)
       .then((response) => {
         const { body } = response;
@@ -332,13 +332,75 @@ describe('UserController (e2e)', () => {
       });
   });
 
+  it('/v1/users/:id Id must be a uuid (GET)', async () => {
+    const { access_token } = await utilService.getUserSigned();
+
+    return request(app.getHttpServer())
+      .get(`/v1/users/123`)
+      .set('Authorization', `Bearer ${access_token}`)
+      .expect(400)
+      .then((response) => {
+        const { body } = response;
+        expect(body).toEqual({
+          success: false,
+          error: 'Id must be a uuid',
+          code: 'IdMustBeAUuidError',
+          status: 400,
+        });
+      });
+  });
+
+  it('/v1/users/:id Id must be a uuid (PUT)', async () => {
+    const { access_token } = await utilService.getUserSigned();
+    const user = await utilService.insertRandomUser();
+
+    return request(app.getHttpServer())
+      .put(`/v1/users/123`)
+      .set('Authorization', `Bearer ${access_token}`)
+      .send({
+        name: user.name,
+        email: user.email,
+        password: user.password,
+        surname: user.surname,
+        type: user.type,
+      })
+      .expect(400)
+      .then((response) => {
+        const { body } = response;
+        expect(body).toEqual({
+          success: false,
+          error: 'Id must be a uuid',
+          code: 'IdMustBeAUuidError',
+          status: 400,
+        });
+      });
+  });
+
+  it('/v1/users/:id Id must be a uuid (DELETE)', async () => {
+    const { access_token } = await utilService.getUserSigned();
+
+    return request(app.getHttpServer())
+      .delete(`/v1/users/123`)
+      .set('Authorization', `Bearer ${access_token}`)
+      .expect(400)
+      .then((response) => {
+        const { body } = response;
+        expect(body).toEqual({
+          success: false,
+          error: 'Id must be a uuid',
+          code: 'IdMustBeAUuidError',
+          status: 400,
+        });
+      });
+  });
+
   it('/v1/users/:id Name must be a string (POST)', async () => {
-    const userSigned = await utilService.getUserSigned();
+    const { access_token } = await utilService.getUserSigned();
     const user = await utilService.generateRandomUser();
 
     return request(app.getHttpServer())
       .post('/v1/users')
-      .set('Authorization', `Bearer ${userSigned.access_token}`)
+      .set('Authorization', `Bearer ${access_token}`)
       .send({
         name: 123,
         email: user.email,
@@ -359,12 +421,12 @@ describe('UserController (e2e)', () => {
   });
 
   it('/v1/users/:id Name must be a string (PUT)', async () => {
-    const userSigned = await utilService.getUserSigned();
+    const { access_token } = await utilService.getUserSigned();
     const user = await utilService.generateRandomUser();
 
     return request(app.getHttpServer())
       .put(`/v1/users/${uuid()}`)
-      .set('Authorization', `Bearer ${userSigned.access_token}`)
+      .set('Authorization', `Bearer ${access_token}`)
       .send({
         name: 123,
         email: user.email,
@@ -385,12 +447,12 @@ describe('UserController (e2e)', () => {
   });
 
   it('/v1/users Surname must be a string (POST)', async () => {
-    const userSigned = await utilService.getUserSigned();
+    const { access_token } = await utilService.getUserSigned();
     const user = await utilService.insertRandomUser();
 
     return request(app.getHttpServer())
       .post('/v1/users')
-      .set('Authorization', `Bearer ${userSigned.access_token}`)
+      .set('Authorization', `Bearer ${access_token}`)
       .send({
         name: user.name,
         email: user.email,
@@ -411,12 +473,12 @@ describe('UserController (e2e)', () => {
   });
 
   it('/v1/users/:id Surname must be a string (PUT)', async () => {
-    const userSigned = await utilService.getUserSigned();
+    const { access_token } = await utilService.getUserSigned();
     const user = await utilService.insertRandomUser();
 
     return request(app.getHttpServer())
       .put(`/v1/users/${uuid()}`)
-      .set('Authorization', `Bearer ${userSigned.access_token}`)
+      .set('Authorization', `Bearer ${access_token}`)
       .send({
         name: user.name,
         email: user.email,
@@ -437,12 +499,12 @@ describe('UserController (e2e)', () => {
   });
 
   it('/v1/users Email must be a valid email (POST)', async () => {
-    const userSigned = await utilService.getUserSigned();
+    const { access_token } = await utilService.getUserSigned();
     const user = await utilService.insertRandomUser();
 
     return request(app.getHttpServer())
       .post('/v1/users')
-      .set('Authorization', `Bearer ${userSigned.access_token}`)
+      .set('Authorization', `Bearer ${access_token}`)
       .send({
         name: user.name,
         email: 'email',
@@ -463,12 +525,12 @@ describe('UserController (e2e)', () => {
   });
 
   it('/v1/users/:id Email must be a valid email (PUT)', async () => {
-    const userSigned = await utilService.getUserSigned();
+    const { access_token } = await utilService.getUserSigned();
     const user = await utilService.insertRandomUser();
 
     return request(app.getHttpServer())
       .put(`/v1/users/${uuid()}`)
-      .set('Authorization', `Bearer ${userSigned.access_token}`)
+      .set('Authorization', `Bearer ${access_token}`)
       .send({
         name: user.name,
         email: 'email',
@@ -489,12 +551,12 @@ describe('UserController (e2e)', () => {
   });
 
   it('/v1/users Password must be a string (POST)', async () => {
-    const userSigned = await utilService.getUserSigned();
+    const { access_token } = await utilService.getUserSigned();
     const user = await utilService.insertRandomUser();
 
     return request(app.getHttpServer())
       .post('/v1/users')
-      .set('Authorization', `Bearer ${userSigned.access_token}`)
+      .set('Authorization', `Bearer ${access_token}`)
       .send({
         name: user.name,
         email: user.email,
@@ -515,12 +577,12 @@ describe('UserController (e2e)', () => {
   });
 
   it('/v1/users/:id Password must be a string (PUT)', async () => {
-    const userSigned = await utilService.getUserSigned();
+    const { access_token } = await utilService.getUserSigned();
     const user = await utilService.insertRandomUser();
 
     return request(app.getHttpServer())
       .put(`/v1/users/${uuid()}`)
-      .set('Authorization', `Bearer ${userSigned.access_token}`)
+      .set('Authorization', `Bearer ${access_token}`)
       .send({
         name: user.name,
         email: user.email,
@@ -541,12 +603,12 @@ describe('UserController (e2e)', () => {
   });
 
   it("/v1/users Type must be a valid user type: 'admin' or 'user' (POST)", async () => {
-    const userSigned = await utilService.getUserSigned();
+    const { access_token } = await utilService.getUserSigned();
     const user = await utilService.insertRandomUser();
 
     return request(app.getHttpServer())
       .post('/v1/users')
-      .set('Authorization', `Bearer ${userSigned.access_token}`)
+      .set('Authorization', `Bearer ${access_token}`)
       .send({
         name: user.name,
         email: user.email,
@@ -567,12 +629,12 @@ describe('UserController (e2e)', () => {
   });
 
   it("/v1/users/:id Type must be a valid user type: 'admin' or 'user' (PUT)", async () => {
-    const userSigned = await utilService.getUserSigned();
+    const { access_token } = await utilService.getUserSigned();
     const user = await utilService.insertRandomUser();
 
     return request(app.getHttpServer())
       .put(`/v1/users/${uuid()}`)
-      .set('Authorization', `Bearer ${userSigned.access_token}`)
+      .set('Authorization', `Bearer ${access_token}`)
       .send({
         name: user.name,
         email: user.email,
@@ -593,12 +655,12 @@ describe('UserController (e2e)', () => {
   });
 
   it('/v1/users Name should not be empty (POST)', async () => {
-    const userSigned = await utilService.getUserSigned();
+    const { access_token } = await utilService.getUserSigned();
     const user = await utilService.insertRandomUser();
 
     return request(app.getHttpServer())
       .post('/v1/users')
-      .set('Authorization', `Bearer ${userSigned.access_token}`)
+      .set('Authorization', `Bearer ${access_token}`)
       .send({
         name: '',
         email: user.email,
@@ -619,12 +681,12 @@ describe('UserController (e2e)', () => {
   });
 
   it('/v1/users/:id Name should not be empty (PUT)', async () => {
-    const userSigned = await utilService.getUserSigned();
+    const { access_token } = await utilService.getUserSigned();
     const user = await utilService.insertRandomUser();
 
     return request(app.getHttpServer())
       .put(`/v1/users/${uuid()}`)
-      .set('Authorization', `Bearer ${userSigned.access_token}`)
+      .set('Authorization', `Bearer ${access_token}`)
       .send({
         name: '',
         email: user.email,
@@ -645,12 +707,12 @@ describe('UserController (e2e)', () => {
   });
 
   it('/v1/users Surname should not be empty (POST)', async () => {
-    const userSigned = await utilService.getUserSigned();
+    const { access_token } = await utilService.getUserSigned();
     const user = await utilService.insertRandomUser();
 
     return request(app.getHttpServer())
       .post('/v1/users')
-      .set('Authorization', `Bearer ${userSigned.access_token}`)
+      .set('Authorization', `Bearer ${access_token}`)
       .send({
         name: user.name,
         email: user.email,
@@ -671,12 +733,12 @@ describe('UserController (e2e)', () => {
   });
 
   it('/v1/users/:id Surname should not be empty (PUT)', async () => {
-    const userSigned = await utilService.getUserSigned();
+    const { access_token } = await utilService.getUserSigned();
     const user = await utilService.insertRandomUser();
 
     return request(app.getHttpServer())
       .put(`/v1/users/${uuid()}`)
-      .set('Authorization', `Bearer ${userSigned.access_token}`)
+      .set('Authorization', `Bearer ${access_token}`)
       .send({
         name: user.name,
         email: user.email,
@@ -697,12 +759,12 @@ describe('UserController (e2e)', () => {
   });
 
   it('/v1/users Email should not be empty (POST)', async () => {
-    const userSigned = await utilService.getUserSigned();
+    const { access_token } = await utilService.getUserSigned();
     const user = await utilService.insertRandomUser();
 
     return request(app.getHttpServer())
       .post('/v1/users')
-      .set('Authorization', `Bearer ${userSigned.access_token}`)
+      .set('Authorization', `Bearer ${access_token}`)
       .send({
         name: user.name,
         email: '',
@@ -723,12 +785,12 @@ describe('UserController (e2e)', () => {
   });
 
   it('/v1/users/:id Email should not be empty (PUT)', async () => {
-    const userSigned = await utilService.getUserSigned();
+    const { access_token } = await utilService.getUserSigned();
     const user = await utilService.insertRandomUser();
 
     return request(app.getHttpServer())
       .put(`/v1/users/${uuid()}`)
-      .set('Authorization', `Bearer ${userSigned.access_token}`)
+      .set('Authorization', `Bearer ${access_token}`)
       .send({
         name: user.name,
         email: '',
@@ -749,12 +811,12 @@ describe('UserController (e2e)', () => {
   });
 
   it('/v1/users Password should not be empty (POST)', async () => {
-    const userSigned = await utilService.getUserSigned();
+    const { access_token } = await utilService.getUserSigned();
     const user = await utilService.insertRandomUser();
 
     return request(app.getHttpServer())
       .post('/v1/users')
-      .set('Authorization', `Bearer ${userSigned.access_token}`)
+      .set('Authorization', `Bearer ${access_token}`)
       .send({
         name: user.name,
         email: user.email,
@@ -775,12 +837,12 @@ describe('UserController (e2e)', () => {
   });
 
   it('/v1/users/:id Password should not be empty (PUT)', async () => {
-    const userSigned = await utilService.getUserSigned();
+    const { access_token } = await utilService.getUserSigned();
     const user = await utilService.generateRandomUser();
 
     return request(app.getHttpServer())
-      .put(`/v1/users/${user.id}`)
-      .set('Authorization', `Bearer ${userSigned.access_token}`)
+      .put(`/v1/users/123`)
+      .set('Authorization', `Bearer ${access_token}`)
       .send({
         name: user.name,
         email: user.email,
@@ -801,12 +863,12 @@ describe('UserController (e2e)', () => {
   });
 
   it('/v1/users Type should not be empty (POST)', async () => {
-    const userSigned = await utilService.getUserSigned();
+    const { access_token } = await utilService.getUserSigned();
     const user = await utilService.generateRandomUser();
 
     return request(app.getHttpServer())
       .post('/v1/users')
-      .set('Authorization', `Bearer ${userSigned.access_token}`)
+      .set('Authorization', `Bearer ${access_token}`)
       .send({
         name: user.name,
         email: user.email,
@@ -827,12 +889,12 @@ describe('UserController (e2e)', () => {
   });
 
   it('/v1/users/:id Type should not be empty (PUT)', async () => {
-    const userSigned = await utilService.getUserSigned();
+    const { access_token } = await utilService.getUserSigned();
     const user = await utilService.generateRandomUser();
 
     return request(app.getHttpServer())
       .put(`/v1/users/${uuid()}`)
-      .set('Authorization', `Bearer ${userSigned.access_token}`)
+      .set('Authorization', `Bearer ${access_token}`)
       .send({
         name: user.name,
         email: user.email,
@@ -928,11 +990,13 @@ describe('UserController (e2e)', () => {
   });
 
   it('/v1/users Not allowed for this type of user (GET)', async () => {
-    const userSigned = await utilService.getUserSigned({ type: UserType.USER });
+    const { access_token } = await utilService.getUserSigned({
+      type: UserType.USER,
+    });
 
     return request(app.getHttpServer())
       .get(`/v1/users`)
-      .set('Authorization', `Bearer ${userSigned.access_token}`)
+      .set('Authorization', `Bearer ${access_token}`)
       .expect(403)
       .then((response) => {
         const { body } = response;
@@ -946,11 +1010,13 @@ describe('UserController (e2e)', () => {
   });
 
   it('/v1/users/:id Not allowed for this type of user (GET)', async () => {
-    const userSigned = await utilService.getUserSigned({ type: UserType.USER });
+    const { access_token } = await utilService.getUserSigned({
+      type: UserType.USER,
+    });
 
     return request(app.getHttpServer())
       .get(`/v1/users/${uuid()}`)
-      .set('Authorization', `Bearer ${userSigned.access_token}`)
+      .set('Authorization', `Bearer ${access_token}`)
       .expect(403)
       .then((response) => {
         const { body } = response;
@@ -964,11 +1030,13 @@ describe('UserController (e2e)', () => {
   });
 
   it('/v1/users Not allowed for this type of user (POST)', async () => {
-    const userSigned = await utilService.getUserSigned({ type: UserType.USER });
+    const { access_token } = await utilService.getUserSigned({
+      type: UserType.USER,
+    });
 
     return request(app.getHttpServer())
       .post(`/v1/users`)
-      .set('Authorization', `Bearer ${userSigned.access_token}`)
+      .set('Authorization', `Bearer ${access_token}`)
       .expect(403)
       .then((response) => {
         const { body } = response;
@@ -982,11 +1050,13 @@ describe('UserController (e2e)', () => {
   });
 
   it('/v1/users/:id Not allowed for this type of user (PUT)', async () => {
-    const userSigned = await utilService.getUserSigned({ type: UserType.USER });
+    const { access_token } = await utilService.getUserSigned({
+      type: UserType.USER,
+    });
 
     return request(app.getHttpServer())
       .put(`/v1/users/${uuid()}`)
-      .set('Authorization', `Bearer ${userSigned.access_token}`)
+      .set('Authorization', `Bearer ${access_token}`)
       .expect(403)
       .then((response) => {
         const { body } = response;
@@ -1000,11 +1070,13 @@ describe('UserController (e2e)', () => {
   });
 
   it('/v1/users/:id Not allowed for this type of user (DELETE)', async () => {
-    const userSigned = await utilService.getUserSigned({ type: UserType.USER });
+    const { access_token } = await utilService.getUserSigned({
+      type: UserType.USER,
+    });
 
     return request(app.getHttpServer())
       .delete(`/v1/users/${uuid()}`)
-      .set('Authorization', `Bearer ${userSigned.access_token}`)
+      .set('Authorization', `Bearer ${access_token}`)
       .expect(403)
       .then((response) => {
         const { body } = response;

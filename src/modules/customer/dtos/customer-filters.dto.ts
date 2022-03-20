@@ -1,7 +1,21 @@
-import { IsDate, IsEmail, IsOptional, IsString, IsUUID } from 'class-validator';
+import {
+  IsDateString,
+  IsEmail,
+  IsOptional,
+  IsString,
+  IsUUID,
+} from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CustomerFiltersDto {
+  @ApiProperty({
+    description: 'Filter by customer id',
+    required: false,
+  })
+  @IsOptional()
+  @IsUUID(null, { message: 'Id must be a uuid' })
+  readonly filter_id?: string;
+
   @ApiProperty({
     description: 'Filter by customer name',
 
@@ -64,7 +78,7 @@ export class CustomerFiltersDto {
     required: false,
   })
   @IsOptional()
-  @IsString({ message: 'Created at must be a date' })
+  @IsDateString({}, { message: 'Created at must be a date' })
   readonly filter_created_at: string;
 
   @ApiProperty({
@@ -72,7 +86,7 @@ export class CustomerFiltersDto {
     required: false,
   })
   @IsOptional()
-  @IsString({ message: 'Updated at must be a date' })
+  @IsDateString({}, { message: 'Updated at must be a date' })
   readonly filter_updated_at: string;
 
   @ApiProperty({
@@ -80,7 +94,7 @@ export class CustomerFiltersDto {
     required: false,
   })
   @IsOptional()
-  @IsDate({ message: 'Created at[from] must be a date' })
+  @IsDateString({}, { message: 'Created at[from] must be a date' })
   readonly filter_created_at_from?: Date;
 
   @ApiProperty({
@@ -88,7 +102,7 @@ export class CustomerFiltersDto {
     required: false,
   })
   @IsOptional()
-  @IsDate({ message: 'Created at[to] must be a date' })
+  @IsDateString({}, { message: 'Created at[to] must be a date' })
   readonly filter_created_at_to?: Date;
 
   @ApiProperty({
@@ -96,7 +110,7 @@ export class CustomerFiltersDto {
     required: false,
   })
   @IsOptional()
-  @IsDate({ message: 'Updated at[from] must be a date' })
+  @IsDateString({}, { message: 'Updated at[from] must be a date' })
   readonly filter_updated_at_from?: Date;
 
   @ApiProperty({
@@ -104,7 +118,7 @@ export class CustomerFiltersDto {
     required: false,
   })
   @IsOptional()
-  @IsDate({ message: 'Updated at[to] must be a date' })
+  @IsDateString({}, { message: 'Updated at[to] must be a date' })
   readonly filter_updated_at_to?: Date;
 
   @ApiProperty({

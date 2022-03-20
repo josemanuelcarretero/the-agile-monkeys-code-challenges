@@ -91,23 +91,25 @@ export class UtilService {
   }
 
   async getUserSigned(overrideData?: any) {
-    const userSigned = await this.insertRandomUser(overrideData);
+    const user = await this.insertRandomUser(overrideData);
     const token = await this.authService.generateAccessToken({
-      ...userSigned,
-      created_at: new Date(userSigned.created_at),
-      updated_at: new Date(userSigned.updated_at),
+      ...user,
+      created_at: new Date(user.created_at),
+      updated_at: new Date(user.updated_at),
       deleted: false,
     });
 
     return {
-      id: userSigned.id,
-      name: userSigned.name,
-      surname: userSigned.surname,
-      email: userSigned.email,
-      type: userSigned.type,
-      password: userSigned.password,
-      created_at: userSigned.created_at,
-      updated_at: userSigned.updated_at,
+      user: {
+        id: user.id,
+        name: user.name,
+        surname: user.surname,
+        email: user.email,
+        type: user.type,
+        password: user.password,
+        created_at: user.created_at,
+        updated_at: user.updated_at,
+      },
       access_token: token.access_token,
     };
   }
@@ -115,5 +117,105 @@ export class UtilService {
   async clearDatabase() {
     await this.customerRepository.delete({});
     await this.userRepository.delete({});
+  }
+
+  mapUsersWithPagination(
+    users,
+    options?: {
+      limit?: number;
+      offset?: number;
+      total?: number;
+      dir?: string;
+      order?: string;
+    },
+  ) {
+    const userWithPagination = [];
+    users.forEach((user) => {
+      userWithPagination.push({
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        surname: user.surname,
+        type: user.type,
+        created_at: user.created_at,
+        updated_at: user.updated_at,
+      });
+    });
+
+    return {
+      success: true,
+      message: 'User list successfully retrieved',
+      code: 'UserListSuccessfullyRetrievedResponse',
+      data: userWithPagination,
+      order: {
+        dir: options?.dir ?? 'ASC',
+        order: options?.order ?? 'created_at',
+      },
+      pagination: {
+        length: users.length,
+        limit: options?.limit ?? 20,
+        offset: options?.offset ?? 0,
+        total: options?.total ?? users.length,
+      },
+    };
+  }
+
+  mapCustomersWithPagination(
+    customers,
+    options?: {
+      limit?: number;
+      offset?: number;
+      total?: number;
+      dir?: string;
+      order?: string;
+    },
+  ) {
+    const customerWithPagination = [];
+    customers.forEach((customer) => {
+      customerWithPagination.push({
+        id: customer.id,
+        name: customer.name,
+        surname: customer.surname,
+        external_id: customer.external_id,
+        image: customer.image,
+        created_at: customer.created_at,
+        updated_at: customer.updated_at,
+        created_by: {
+          id: customer.created_by.id,
+          name: customer.created_by.name,
+          surname: customer.created_by.surname,
+          email: customer.created_by.email,
+          type: customer.created_by.type,
+          created_at: customer.created_by.created_at,
+          updated_at: customer.created_by.updated_at,
+        },
+        updated_by: {
+          id: customer.updated_by.id,
+          name: customer.updated_by.name,
+          surname: customer.updated_by.surname,
+          email: customer.updated_by.email,
+          type: customer.updated_by.type,
+          created_at: customer.updated_by.created_at,
+          updated_at: customer.updated_by.updated_at,
+        },
+      });
+    });
+
+    return {
+      success: true,
+      message: 'Customer list successfully retrieved',
+      code: 'CustomerListSuccessfullyRetrievedResponse',
+      data: customerWithPagination,
+      order: {
+        dir: options?.dir ?? 'ASC',
+        order: options?.order ?? 'created_at',
+      },
+      pagination: {
+        length: customers.length,
+        limit: options?.limit ?? 20,
+        offset: options?.offset ?? 0,
+        total: options?.total ?? customers.length,
+      },
+    };
   }
 }
